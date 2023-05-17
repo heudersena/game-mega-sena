@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Socket-io</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>   
+    *{
+      font-family: 'Roboto', sans-serif;
+    }  
+      .container {
+        display: flex;
+        justify-content: center;
+      }
+      /* width */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #38be1a;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #38be1a;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #38be1a;
+}
+    </style>
+  </head>
+  <body class="overflow-hidden">
+    
+    <main class="w-100 min-h-screen min-w-full bg-gray-200 flex-col md:flex-row md:flex">
+      <section class="h-32 bg-green-500 md:hidden">
+        <div class="flex justify-center relative">
+          <img src="https://drive.google.com/uc?export=view&id=1Whh_yGYrwKwpGUCE1Cd7_XCEfacqXNh8" class="w-32 mt-4">
+        </div>
+        <div class="flex flex-col gap-2 mt-4">
+          <div class="losers text-3xl text-center font-bold"></div>
+          <span class="overflow-y-auto h-screen uppercase mt-14 mb-3">
+            <article class="mt-2 border p-4 uppercase rounded-sm bg-slate-400/40">
+              <div> <span class="font-bold">Cartela: </span> #${item.aposta.namber_bet} </div>
+              <div> <span class="font-bold">Local: </span>${item.aposta.establishment.name} </div>
+             </article>
+             <article class="mt-2 border p-4 uppercase rounded-sm bg-slate-400/40">
+              <div> <span class="font-bold">Cartela: </span> #${item.aposta.namber_bet} </div>
+              <div> <span class="font-bold">Local: </span>${item.aposta.establishment.name} </div>
+             </article>
+             <article class="mt-2 border p-4 uppercase rounded-sm bg-slate-400/40">
+              <div> <span class="font-bold">Cartela: </span> #${item.aposta.namber_bet} </div>
+              <div> <span class="font-bold">Local: </span>${item.aposta.establishment.name} </div>
+             </article>
+          </span>
+        </div>
+      </section>
+
+      <section class="w-4/12 p-2 bg-green-400  hidden md:block">
+        <div class="flex justify-center">
+          <img src="/static/images/coringa-games_logo.png" class="w-32 mt-4">
+        </div>
+        <div class="flex flex-col gap-2 mt-4">
+          <div class="losers text-3xl text-center font-bold"></div>
+          <span class="_HTML_ overflow-y-auto h-screen uppercase">   
+          </span>
+        </div>
+      </section>
+
+      <section class="flex-1 bg-red-200">
+        <div class="flex flex-col h-screen p-8">
+          <div class="h-16 p-4 flex items-center justify-center text-5xl font-bold uppercase number-bet mb-8"></div>
+
+          <div class="w-full h-full p-4">
+            <div class="h-full flex items-center justify-center">
+              <div class="container grid grid-cols-3 md:grid-cols-6 gap-4 items-center justify-center -mt-6"></div>
+            </div>
+          </div>
+
+          <div class="h-32 p-4"></div>
+        </div>
+      </section>
+
+    </main>
+    
+    <!-- <div class="container"></div> -->
+  </body class="w-100 h-100">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+ 
+  <script type="module">
+  
+
+     import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+     const socket = io("http://192.168.0.111:4008");
+
+    const bet = document.querySelector('.number-bet');
+    const _html_total = document.querySelector('.ball');
+    const container = document.querySelector('.container');
+    const _losers = document.querySelector('.losers');
+
+    socket.on("number::aposta", (data) => {
+      bet.innerHTML = `aposta#${data}`
+    })
+
+    socket.on('gamer:total', (resultados) => {
+      container.innerHTML = '';
+      resultados.forEach((resultado, index) => {
+        const div = document.createElement('div');
+        // flex justify-center items-center uppercase font-bold text-lg h-10 w-10 bg-green-400 rounded-full m-4
+        div.classList.add('ball');
+        div.classList.add('flex');
+        div.classList.add('justify-center');
+        div.classList.add('items-center');
+        div.classList.add('uppercase');
+        div.classList.add('font-bold');
+        div.classList.add('md:text-6xl');
+        div.classList.add('h-9');
+        div.classList.add('md:h-32');
+        div.classList.add('w-9');
+        div.classList.add('md:w-32');
+        div.classList.add('bg-green-400');
+        div.classList.add('rounded-full');
+        div.innerText = resultado;
+        container.appendChild(div);
+
+        // Define a animação para a bola
+        anime({
+          targets: div,
+          translateX: 0,
+          direction: 'alternate',
+          loop: false,
+          easing: 'easeInOutSine',
+          duration: 1000,
+        });
+      });
+    });
+
+    socket.on('gamer:total', (data) => {});
+
+    socket.on('__CLEAN__', () => {
+      document.querySelector("._HTML_").innerHTML = `
+        <div class="uppercase text-center">AGUARDE...</div>
+      `
+    });
+    socket.on('VAZIO_BETS__', () => {
+      document.querySelector("._HTML_").innerHTML = `
+        <div class="uppercase text-center">NENHUMA APOSTA VENCEDORA</div>
+      `
+    });
+
+    socket.on('_GANHADORES_', _GANHADORES_ => { 
+      let _HTML_GANHADORES = ``;
+
+      _GANHADORES_.resultados.forEach(item => {
+        _HTML_GANHADORES += `
+        <article class="mt-2 border p-4 uppercase rounded-sm bg-slate-400/40">
+            <div> <span class="font-bold">Cartela: </span> #${item.aposta.namber_bet} </div>
+            <div> <span class="font-bold">Local: </span>${item.aposta.establishment.name} </div>
+           </article>
+        `
+      })
+      
+      document.querySelector("._HTML_").innerHTML = _HTML_GANHADORES
+    });
+
+  </script>
+</html>

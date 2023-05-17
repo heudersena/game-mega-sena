@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "views"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "../src/zod" // (default) the directory where generated zod schemas will be saved
+
+  relationModel = true // (default) Create and export both plain and related models.
+  // relationModel         = "default" // Do not export model without relations.
+  // relationModel         = false // Do not generate related model
+
+  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
+
+  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+
+  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
+  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+
+  // imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
+
+  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
+  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../ERD.pdf"
+}
+
+enum TYPEROLEUSER {
+  SUPERADMIN // ZÉ
+  SELLER // VENDENDOR
+  MEMBERS // SOCIOS
+  OTHERS // OUTROS
+}
+
+model User {
+  id            String       @id @default(uuid())
+  code_ref_user String?
+  email         String
+  password      String
+  access_role   TYPEROLEUSER @default(SELLER)
+  is_active     Boolean      @default(true)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @default(now()) @updatedAt
+
+  @@index([id, email, access_role])
+  @@map("users")
+}
+
+model Game {
+  id         String   @id @default(uuid())
+  match_id   Int
+  numbers    String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@index([id, match_id])
+  @@map("games")
+}
+
+// Sociedades sócios => partners
+
+// Pessoas que compram as cartelas / Pessoas / Estabelecimento
+// Estabelecimento => Establishment =>establishments
+model Establishment {
+  id                  String    @id @default(uuid())
+  name                String
+  number_phone        String
+  number_code         String // CNPJ ou CPF
+  is_active           Boolean   @default(true)
+  geographic_location String?
+  latitude            String?
+  longitude           String?
+  Address             Address[]
+  Bet                 Bet[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("establishments")
+}
+
+// https://brasilapi.com.br/api/cep/v2/72550012
+model Address {
+  id              String        @id @default(uuid())
+  cep             String
+  state           String
+  city            String
+  neighborhood    String
+  street          String
+  number          String
+  establishment   Establishment @relation(fields: [establishmentId], references: [id])
+  establishmentId String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("adresses")
+}
+
+enum BETSTATUS {
+  IN_PROCESSING
+  FINISHED
+  CANCELED
+}
+
+// Aposta bet
+model Bet {
+  id                 String        @id @default(uuid())
+  establishment      Establishment @relation(fields: [establishmentId], references: [id])
+  establishmentId    String
+  number_game_result String // PEGAR O NUMERO DO ULTIMO REGISTRO DA TABELA GAMER + 1
+  numbers            String
+  status             BETSTATUS     @default(IN_PROCESSING)
+  awarded            Boolean       @default(false) // premiada
+  hits               Int           @default(0) // acertos
+  namber_bet         Int
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @default(now()) @updatedAt
+
+  @@map("bets")
+}
