@@ -48,7 +48,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 import { CronJobGamer } from "./cron/CronJobGamer";
 
 
-// CronJobGamer.startGamer(io)
+CronJobGamer.startGamer(io)
 
 
 
