@@ -14,7 +14,7 @@
     [] Enviar cada numero que foi sorteado por intervalos 6 numeros
     [] Verificar as apostas ganhadoras e enviar para o frontend
 
-## METHODO QUE SORTEA UMA APOSTA PASSADA PARA UM ESTABELECIMENTO EXPEDIFICO
+## METHODO QUE SORTEA UMA APOSTA PASSADA PARA UM ESTABELECIMENTO ESPECÍFICO 
     [] Modificar tabela para essa regra
     [] Gerar o insert
     [] Marcar na tabela que esse ganhador foi pelo esse methodo
