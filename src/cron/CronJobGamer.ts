@@ -12,7 +12,7 @@ let totalNumber: any = []
 
 class CronJobGamer {
     static async startGamer(io: any) {
-        return cron.schedule('3 * * * * *', async () => {
+        return cron.schedule('*/15 * * * * *', async () => {
             io.emit("__CLEAN__")
 
             // NUMERO UNÍCO GAME
@@ -27,70 +27,99 @@ class CronJobGamer {
             // ENVIAR PARA O FRON-END O ID DO GAMER
             io.emit("number::aposta", _ID)
 
-            console.log(_ID);
-
-
             const TRANSFORME_STRING_TO_ARRAY = NEW_NAMBER_GAME.split(",").map(n => Number(n))
-
-            let _quantity_loop = 0
-            const resultados: any = [];
-
-            TRANSFORME_STRING_TO_ARRAY.forEach((n, i) => {
-
-                setTimeout(async () => {
-                    if (totalNumber.length == 6) {
-                        totalNumber = []
-                    } else {
-                        totalNumber.push(n)
-                        io.emit("gamer:total", [...totalNumber])
-                        io.emit("gamer", n)
-                    }
-                    _quantity_loop++
-
-                    if (_quantity_loop == 6) {
-                        // CALCULAR AS APOSTAS E MOSTRAR AS APOSTAS QUE FORAM PREMIADAS
-                        calculateBetMetch.verifyBetMatch(GAMER).then(async response => {
-                            // const game = NEW_NAMBER_GAME.split(",").map(_R => Number(_R))
-
-                            const BETS = await prisma.bet.findMany({ where: { number_game_result: String(GAMER?.match_id), awarded: false, status: "IN_PROCESSING" } })
+            // number_game_result: String(GAMER?.match_id)
+            const BETS = await prisma.bet.findMany({ where: { awarded: false, status: "IN_PROCESSING" } })
+            console.log("INIT");
 
 
-                            if (BETS.length <= 0) {
-                                io.emit("_GANHADORES_", { resultados: [], bet: false })
-                                return false
-                            }
-
-                            let correspondencias = 0;
-
-                            for (const _BET of BETS) {
-
-                                for (const _RESPONSE of _BET.numbers.split(",").map(_R => Number(_R))) {
-                                    if (TRANSFORME_STRING_TO_ARRAY.includes(_RESPONSE)) {
-                                    console.log(_RESPONSE);                                    
-                                        correspondencias++;
-                                    }
-                                }
-
-                                if (correspondencias >= 1) {
-                                    UpdateValuesTableBet.winners(correspondencias, _BET.id).then(items => {
-                                        resultados.push({ id: _BET.id, numeros: _BET.numbers, correspondencias, aposta: items });
-
-                                    }).finally(() => {
-                                        io.emit("_GANHADORES_", { resultados, bet: true })
-                                    })
-                                } else {
-                                    UpdateValuesTableBet.losers(_BET.id).then(r => r)
-                                }                               
-
-                            }
-                        })
-                    }
-
-                }, 3000 * i)
-
-
-
+            const _NEW = BETS.map(item => {
+                return {
+                    ...item,
+                    numbers: item.numbers.split(",").map(Number)
+                }
             })
+
+
+
+
+
+            let acertos = 0
+            let arr: any[] = []
+            for (const elemento of _NEW) {
+                for (const n of elemento.numbers) {
+                    if (TRANSFORME_STRING_TO_ARRAY.includes(n)) {
+                        acertos++
+                    } else {
+
+                    }
+
+                }
+                arr.push(elemento.hits = acertos)
+            }
+            console.log(arr);
+
+
+
+            // let _quantity_loop = 0
+            // const resultados: any = [];
+
+            // TRANSFORME_STRING_TO_ARRAY.forEach((n, i) => {
+
+            //     setTimeout(async () => {
+            //         if (totalNumber.length == 6) {
+            //             totalNumber = []
+            //         } else {
+            //             totalNumber.push(n)
+            //             io.emit("gamer:total", [...totalNumber])
+            //             io.emit("gamer", n)
+            //         }
+            //         _quantity_loop++
+
+            //         if (_quantity_loop == 6) {
+            //             // CALCULAR AS APOSTAS E MOSTRAR AS APOSTAS QUE FORAM PREMIADAS
+            //             calculateBetMetch.verifyBetMatch(GAMER).then(async response => {
+            //                 // const game = NEW_NAMBER_GAME.split(",").map(_R => Number(_R))
+
+            //                 const BETS = await prisma.bet.findMany({ where: { number_game_result: String(GAMER?.match_id), awarded: false, status: "IN_PROCESSING" } })
+
+
+            //                 if (BETS.length <= 0) {
+            //                     io.emit("_GANHADORES_", { resultados: [], bet: false })
+            //                     return false
+            //                 }
+
+            //                 let correspondencias = 0;
+
+            //                 for (const _BET of BETS) {
+
+            //                     for (const _RESPONSE of _BET.numbers.split(",").map(_R => Number(_R))) {
+            //                         if (TRANSFORME_STRING_TO_ARRAY.includes(_RESPONSE)) {
+            //                             console.log(_RESPONSE);
+            //                             correspondencias++;
+            //                         }
+            //                     }
+
+            //                     if (correspondencias >= 1) {
+            //                         UpdateValuesTableBet.winners(correspondencias, _BET.id).then(items => {
+            //                             resultados.push({ id: _BET.id, numeros: _BET.numbers, correspondencias, aposta: items });
+
+            //                         }).finally(() => {
+            //                             io.emit("_GANHADORES_", { resultados, bet: true })
+            //                         })
+            //                     } else {
+            //                         UpdateValuesTableBet.losers(_BET.id).then(r => r)
+            //                     }
+
+            //                 }
+            //             })
+            //         }
+
+            //     }, 3000 * i)
+
+
+
+            // })
 
 
         })
