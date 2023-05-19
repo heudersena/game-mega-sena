@@ -12,8 +12,9 @@ let totalNumber: any = []
 
 class CronJobGamer {
     static async startGamer(io: any) {
-        return cron.schedule('*/15 * * * * *', async () => {
+        return cron.schedule('*/30 * * * * *', async () => {
             io.emit("__CLEAN__")
+            console.log("SCHEDULE");
 
             // NUMERO UNÍCO GAME
             const NEW_NAMBER_GAME = String(await this.FN_GET_NUMBER_GAME())
@@ -30,97 +31,59 @@ class CronJobGamer {
             const TRANSFORME_STRING_TO_ARRAY = NEW_NAMBER_GAME.split(",").map(n => Number(n))
             // number_game_result: String(GAMER?.match_id)
             const BETS = await prisma.bet.findMany({ where: { awarded: false, status: "IN_PROCESSING" } })
-            console.log("INIT");
 
+            processArray(0)
 
-            const _NEW = BETS.map(item => {
-                return {
-                    ...item,
-                    numbers: item.numbers.split(",").map(Number)
+            function processArray(index) {
+                let countTimeOut;
+                if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
+                    clearTimeout(countTimeOut)
+                    calculaApostas()
+                    console.log("CLEARTIMEOUT");
+                    return;
                 }
-            })
+
+                countTimeOut = setTimeout(() => {
+                    console.log(new Date().toTimeString());
+                    console.log(TRANSFORME_STRING_TO_ARRAY[index]);
+                    io.emit("gamer:total", TRANSFORME_STRING_TO_ARRAY[index])
+                    processArray(index + 1);
+                }, 3000);
 
 
-
-
-
-            let acertos = 0
-            let arr: any[] = []
-            for (const elemento of _NEW) {
-                for (const n of elemento.numbers) {
-                    if (TRANSFORME_STRING_TO_ARRAY.includes(n)) {
-                        acertos++
-                    } else {
-
-                    }
-
-                }
-                arr.push(elemento.hits = acertos)
             }
-            console.log(arr);
+
+            async function calculaApostas() {
+                const content = BETS.map((o) => {
+                    const numbersArray = o.numbers.split(',').map(n => parseInt(n))
+                    const intersection = numbersArray.filter(n => TRANSFORME_STRING_TO_ARRAY.includes(n))
+                    return {
+                        ...o,
+                        hits: intersection.length,
+                        awarded: intersection.length >= 4 ? true : false,
+                        numbersArray,
+                        intersection
+                    }
+                })
+
+                content.forEach(async (item, index) => {
+                    await prisma.bet.update({
+                        where: { id: item.id }, data: {
+                            hits: item.hits,
+                            awarded: Boolean(item.awarded),
+                            status: "FINISHED"
+                        }
+                    })
+                })
+
+                const comments = await prisma.bet.findMany({ where: { number_game_result: String(_ID), awarded: true }, include: { establishment: { select: { name: true } } } })
+
+                if (comments.length > 0) {
+                    io.emit("_GANHADORES_", comments)
+                }
 
 
-
-            // let _quantity_loop = 0
-            // const resultados: any = [];
-
-            // TRANSFORME_STRING_TO_ARRAY.forEach((n, i) => {
-
-            //     setTimeout(async () => {
-            //         if (totalNumber.length == 6) {
-            //             totalNumber = []
-            //         } else {
-            //             totalNumber.push(n)
-            //             io.emit("gamer:total", [...totalNumber])
-            //             io.emit("gamer", n)
-            //         }
-            //         _quantity_loop++
-
-            //         if (_quantity_loop == 6) {
-            //             // CALCULAR AS APOSTAS E MOSTRAR AS APOSTAS QUE FORAM PREMIADAS
-            //             calculateBetMetch.verifyBetMatch(GAMER).then(async response => {
-            //                 // const game = NEW_NAMBER_GAME.split(",").map(_R => Number(_R))
-
-            //                 const BETS = await prisma.bet.findMany({ where: { number_game_result: String(GAMER?.match_id), awarded: false, status: "IN_PROCESSING" } })
-
-
-            //                 if (BETS.length <= 0) {
-            //                     io.emit("_GANHADORES_", { resultados: [], bet: false })
-            //                     return false
-            //                 }
-
-            //                 let correspondencias = 0;
-
-            //                 for (const _BET of BETS) {
-
-            //                     for (const _RESPONSE of _BET.numbers.split(",").map(_R => Number(_R))) {
-            //                         if (TRANSFORME_STRING_TO_ARRAY.includes(_RESPONSE)) {
-            //                             console.log(_RESPONSE);
-            //                             correspondencias++;
-            //                         }
-            //                     }
-
-            //                     if (correspondencias >= 1) {
-            //                         UpdateValuesTableBet.winners(correspondencias, _BET.id).then(items => {
-            //                             resultados.push({ id: _BET.id, numeros: _BET.numbers, correspondencias, aposta: items });
-
-            //                         }).finally(() => {
-            //                             io.emit("_GANHADORES_", { resultados, bet: true })
-            //                         })
-            //                     } else {
-            //                         UpdateValuesTableBet.losers(_BET.id).then(r => r)
-            //                     }
-
-            //                 }
-            //             })
-            //         }
-
-            //     }, 3000 * i)
-
-
-
-            // })
-
+            }
 
         })
 

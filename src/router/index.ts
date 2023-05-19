@@ -10,7 +10,7 @@ r.get("/", HomeController.index)
 
 r.get("/v1/check/:numbers", CheckBetController.check)
 r.post("/v1/bet", BetController.create)
-
+ 
 
 
 export { r }

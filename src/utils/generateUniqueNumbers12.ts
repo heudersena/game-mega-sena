@@ -14,7 +14,7 @@ function generateUniqueNumbers12(): Promise<Number[]> {
     }
 
     // Retorna os primeiros 5 números do array
-    const numbers = numeros.slice(0, 19)
+    const numbers = numeros.slice(0, 20)
     const numberOrders = numbers.sort((a: number, b: number) => a - b)
     return numberOrders
 }

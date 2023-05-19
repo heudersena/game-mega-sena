@@ -112,11 +112,13 @@
       bet.innerHTML = `aposta#${data}`
     })
 
-    socket.on('gamer:total', (resultados) => {
-      container.innerHTML = '';
-      resultados.forEach((resultado, index) => {
+    container.innerHTML = '';
+    socket.on('gamer:total', (resultado) => {
+      _HTML_BOLL(resultado)     
+      });
+
+    function _HTML_BOLL(bool) {
         const div = document.createElement('div');
-        // flex justify-center items-center uppercase font-bold text-lg h-10 w-10 bg-green-400 rounded-full m-4
         div.classList.add('ball');
         div.classList.add('flex');
         div.classList.add('justify-center');
@@ -130,9 +132,8 @@
         div.classList.add('md:w-32');
         div.classList.add('bg-green-400');
         div.classList.add('rounded-full');
-        div.innerText = resultado;
+        div.innerHTML = bool;
         container.appendChild(div);
-
         // Define a animação para a bola
         anime({
           targets: div,
@@ -142,12 +143,12 @@
           easing: 'easeInOutSine',
           duration: 1000,
         });
-      });
-    });
+    }
 
     socket.on('gamer:total', (data) => {});
 
     socket.on('__CLEAN__', () => {
+      container.innerHTML= ""
       document.querySelector("._HTML_").innerHTML = `
         <div class="uppercase text-center">AGUARDE...</div>
       `
@@ -159,13 +160,14 @@
     });
 
     socket.on('_GANHADORES_', _GANHADORES_ => { 
+      console.log(_GANHADORES_);
       let _HTML_GANHADORES = ``;
 
-      _GANHADORES_.resultados.forEach(item => {
+      _GANHADORES_.forEach(item => {
         _HTML_GANHADORES += `
         <article class="mt-2 border p-4 uppercase rounded-sm bg-slate-400/40">
-            <div> <span class="font-bold">Cartela: </span> #${item.aposta.namber_bet} </div>
-            <div> <span class="font-bold">Local: </span>${item.aposta.establishment.name} </div>
+            <div> <span class="font-bold">Cartela: </span> #${item.namber_bet} </div>
+            <div> <span class="font-bold">Local: </span>${item.establishment.name} </div>
            </article>
         `
       })
