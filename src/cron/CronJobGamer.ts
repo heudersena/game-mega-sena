@@ -31,6 +31,9 @@ class CronJobGamer {
             const TRANSFORME_STRING_TO_ARRAY = NEW_NAMBER_GAME.split(",").map(n => Number(n))
             // number_game_result: String(GAMER?.match_id)
             const BETS = await prisma.bet.findMany({ where: { awarded: false, status: "IN_PROCESSING" } })
+            console.log(TRANSFORME_STRING_TO_ARRAY);            
+            console.log(BETS);
+            
 
             processArray(0)
 
