@@ -7,6 +7,7 @@ import { prisma } from "../db/database"
 import { UpdateValuesTableBet } from "../utils/UpdateValuesTableBet"
 
 import axios from "axios"
+import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResult"
 
 let totalNumber: any = []
 
@@ -14,7 +15,6 @@ class CronJobGamer {
     static async startGamer(io: any) {
         return cron.schedule('*/30 * * * * *', async () => {
             io.emit("__CLEAN__")
-            console.log("SCHEDULE");
 
             // NUMERO UNÍCO GAME
             const NEW_NAMBER_GAME = String(await this.FN_GET_NUMBER_GAME())
@@ -24,36 +24,34 @@ class CronJobGamer {
 
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
-            const _ID = GAMER?.match_id
+            const _ID = String(GAMER?.match_id)
             // ENVIAR PARA O FRON-END O ID DO GAMER
             io.emit("number::aposta", _ID)
 
             const TRANSFORME_STRING_TO_ARRAY = NEW_NAMBER_GAME.split(",").map(n => Number(n))
-            // number_game_result: String(GAMER?.match_id)
-            const BETS = await prisma.bet.findMany({ where: { awarded: false, status: "IN_PROCESSING" } })
-            console.log(TRANSFORME_STRING_TO_ARRAY);            
-            console.log(BETS);
-            
+
+            const BETS = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, status: "IN_PROCESSING" } })
 
             processArray(0)
 
-            function processArray(index) {
+            async function processArray(index) {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
                     clearTimeout(countTimeOut)
                     calculaApostas()
-                    console.log("CLEARTIMEOUT");
                     return;
                 }
 
-                countTimeOut = setTimeout(() => {
-                    console.log(new Date().toTimeString());
-                    console.log(TRANSFORME_STRING_TO_ARRAY[index]);
+                countTimeOut = setTimeout(async () => {
                     io.emit("gamer:total", TRANSFORME_STRING_TO_ARRAY[index])
                     processArray(index + 1);
-                }, 3000);
+
+                    // CALCULAR AS MELHORES CARTELAS
 
 
+                }, 5000);
+
+                await updateEveryRoundOfTheResult._HANDLE(BETS, TRANSFORME_STRING_TO_ARRAY[index])
             }
 
             async function calculaApostas() {

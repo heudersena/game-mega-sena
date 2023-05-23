@@ -11,6 +11,8 @@ export const BetModel = z.object({
   awarded: z.boolean(),
   hits: z.number().int(),
   namber_bet: z.number().int(),
+  hits_round: z.number().int().nullish(),
+  namber_round: z.string().nullish(),
   created_at: z.date(),
   updated_at: z.date(),
 })
