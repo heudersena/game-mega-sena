@@ -9,8 +9,9 @@ const r = Router()
 r.get("/", HomeController.index)
 
 r.get("/v1/check/:numbers", CheckBetController.check)
+r.get("/maior", CheckBetController.maior)
 r.post("/v1/bet", BetController.create)
- 
+
 
 
 export { r }

@@ -2,18 +2,14 @@ import cron from "node-cron"
 import { returnLastIdTableGames } from "../utils/returnLastIdTableGames"
 import { generateUniqueNumbers } from "../utils/generateUniqueNumbers"
 import { insertValueTableGame } from "../utils/insertValueTableGame"
-import { calculateBetMetch } from "../utils/calculateBetMetch"
 import { prisma } from "../db/database"
-import { UpdateValuesTableBet } from "../utils/UpdateValuesTableBet"
 
-import axios from "axios"
 import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResult"
 
-let totalNumber: any = []
 
 class CronJobGamer {
     static async startGamer(io: any) {
-        return cron.schedule('*/30 * * * * *', async () => {
+        return cron.schedule('*/2 * * * *', async () => {
             io.emit("__CLEAN__")
 
             // NUMERO UNÍCO GAME
@@ -25,6 +21,8 @@ class CronJobGamer {
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
             const _ID = String(GAMER?.match_id)
+            console.log( _ID);
+            
             // ENVIAR PARA O FRON-END O ID DO GAMER
             io.emit("number::aposta", _ID)
 
@@ -46,18 +44,27 @@ class CronJobGamer {
                     io.emit("gamer:total", TRANSFORME_STRING_TO_ARRAY[index])
                     processArray(index + 1);
 
-                    // CALCULAR AS MELHORES CARTELAS
+                }, 10000);
 
-
-                }, 5000);
-
+                // CALCULAR AS MELHORES CARTELAS
                 await updateEveryRoundOfTheResult._HANDLE(BETS, TRANSFORME_STRING_TO_ARRAY[index])
+                // const updateBetView = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits: { gt: 3 } } }, orderBy: { hits_round: "desc" }, include: { establishment: true } })
+                const updateBetView =     await prisma.bet.findMany( {where: { number_game_result: String(_ID),AND: {  } }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
+                console.log("updateBetView",updateBetView);
+                
+                if (updateBetView.length > 0) {
+                    io.emit("_GANHADORES_", updateBetView)
+                }
+
+
             }
 
             async function calculaApostas() {
                 const content = BETS.map((o) => {
                     const numbersArray = o.numbers.split(',').map(n => parseInt(n))
                     const intersection = numbersArray.filter(n => TRANSFORME_STRING_TO_ARRAY.includes(n))
+                    console.log(intersection);
+
                     return {
                         ...o,
                         hits: intersection.length,
@@ -77,7 +84,7 @@ class CronJobGamer {
                     })
                 })
 
-                const comments = await prisma.bet.findMany({ where: { number_game_result: String(_ID), awarded: true }, include: { establishment: { select: { name: true } } } })
+                const comments = await prisma.bet.findMany({ where: { number_game_result: String(_ID), awarded: true, AND: { hits: { gt: 3 } } }, include: { establishment: { select: { name: true } } } })
 
                 if (comments.length > 0) {
                     io.emit("_GANHADORES_", comments)
