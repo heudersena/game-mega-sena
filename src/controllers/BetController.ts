@@ -26,7 +26,8 @@ class BetController {
             response.json(content)
 
         } catch (error) {
-            response.json(error)
+            // @ts-ignore
+            response.json(error?.meta?.target == 'bets_namber_bet_key' ? "Tente novamente!" : error)
         }
 
     }
