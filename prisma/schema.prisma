@@ -127,7 +127,7 @@ model Bet {
   status             BETSTATUS     @default(IN_PROCESSING)
   awarded            Boolean       @default(false) // premiada
   hits               Int           @default(0) // acertos
-  namber_bet         Int
+  namber_bet         Int           @unique()
   hits_round         Int?          @default(0)
   namber_round       String?       @default("")
   isPaymentClient    Int           @default(0)

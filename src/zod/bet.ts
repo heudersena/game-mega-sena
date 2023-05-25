@@ -13,6 +13,7 @@ export const BetModel = z.object({
   namber_bet: z.number().int(),
   hits_round: z.number().int().nullish(),
   namber_round: z.string().nullish(),
+  isPaymentClient: z.number().int(),
   created_at: z.date(),
   updated_at: z.date(),
 })
