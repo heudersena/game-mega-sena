@@ -21,8 +21,8 @@ class CronJobGamer {
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
             const _ID = String(GAMER?.match_id)
-            console.log( _ID);
-            
+            console.log(_ID);
+
             // ENVIAR PARA O FRON-END O ID DO GAMER
             io.emit("number::aposta", _ID)
 
@@ -49,15 +49,16 @@ class CronJobGamer {
                 // CALCULAR AS MELHORES CARTELAS
                 await updateEveryRoundOfTheResult._HANDLE(BETS, TRANSFORME_STRING_TO_ARRAY[index])
                 // const updateBetView = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits: { gt: 3 } } }, orderBy: { hits_round: "desc" }, include: { establishment: true } })
-                const updateBetView =     await prisma.bet.findMany( {where: { number_game_result: String(_ID),AND: {  } }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
-                console.log("updateBetView",updateBetView);
-                
+
+                const updateBetView = await prisma.bet.findMany({ where: { number_game_result: String(_ID), AND: {} }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
+    
                 if (updateBetView.length > 0) {
-                    io.emit("_GANHADORES_", updateBetView)
+                    console.log("Entrar");
+                    setTimeout(() => io.emit("_GANHADORES_", { _GANHADORES_: updateBetView, info: false }), 1000)
+                    console.log("Sair");
                 }
-
-
             }
+
 
             async function calculaApostas() {
                 const content = BETS.map((o) => {
@@ -84,15 +85,19 @@ class CronJobGamer {
                     })
                 })
 
-                const comments = await prisma.bet.findMany({ where: { number_game_result: String(_ID), awarded: true, AND: { hits: { gt: 3 } } }, include: { establishment: { select: { name: true } } } })
+                setTimeout(() =>
+                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, include: { establishment: { select: { name: true } } } })
+                        .then((comments) => {
+                            if (comments.length > 0) {
+                                io.emit("_GANHADORES_", { _GANHADORES_: comments, info: true })
+                                console.log({ _GANHADORES_: comments, info: true });
 
-                if (comments.length > 0) {
-                    io.emit("_GANHADORES_", comments)
-                }
+                            }
+                        })
 
+                    , 2000)
 
             }
-
         })
 
 

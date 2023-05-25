@@ -14,10 +14,12 @@ interface Ganhador {
 
 class CheckBetController {
     static async maior(request: Request, response: Response) {
+        const numero_aposta = String(request.query.n);
         //   await prisma.bet.findMany({ where: { awarded: true, AND: { hits: { gt: 3 } } }, include: { establishment: { select: { name: true } } } })
-        const comments = await prisma.bet.findMany( {where: { number_game_result: '41',AND: { hits: { gt: 1 } } }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
+        const comments = await prisma.bet.findMany({ where: { number_game_result: { equals: numero_aposta }, AND: { awarded: { equals: true }} }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
+        // const comments = await prisma.bet.findMany({ where: { number_game_result: String(_ID), awarded: true, AND: { hits: { gt: 3 } } }, include: { establishment: { select: { name: true } } } })
 
-        response.json(comments)
+        response.json({ quantity: comments.length, comments })
     }
     static async check(request: Request, response: Response) {
         const resultados: any = [];

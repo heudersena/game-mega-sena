@@ -158,9 +158,9 @@
         <div class="uppercase text-center">NENHUMA APOSTA VENCEDORA</div>
       `
     });
-
-    socket.on('_GANHADORES_', _GANHADORES_ => { 
-      console.log(_GANHADORES_);
+    
+    socket.on('_GANHADORES_', ({_GANHADORES_, info}) => { 
+      console.log(info,_GANHADORES_);
       let _HTML_GANHADORES = ``;
 
       _GANHADORES_.forEach(item => {
