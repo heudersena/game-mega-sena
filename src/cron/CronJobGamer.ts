@@ -9,7 +9,7 @@ import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResul
 
 class CronJobGamer {
     static async startGamer(io: any) {
-        return cron.schedule('*/2 * * * *', async () => {
+        return cron.schedule('*/1 * * * *', async () => {
             io.emit("__CLEAN__")
 
             // NUMERO UNÍCO GAME
@@ -54,7 +54,13 @@ class CronJobGamer {
     
                 if (updateBetView.length > 0) {
                     console.log("Entrar");
-                    setTimeout(() => io.emit("_GANHADORES_", { _GANHADORES_: updateBetView, info: false }), 1000)
+                    const newListMap = updateBetView.map(i=>{
+                        return{
+                            ...i,
+                            numbers: i.numbers.split(",")
+                        }
+                    })
+                    setTimeout(() => io.emit("_GANHADORES_", { _GANHADORES_: newListMap, info: false }), 1000)
                     console.log("Sair");
                 }
             }
@@ -89,8 +95,13 @@ class CronJobGamer {
                     prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, include: { establishment: { select: { name: true } } } })
                         .then((comments) => {
                             if (comments.length > 0) {
-                                io.emit("_GANHADORES_", { _GANHADORES_: comments, info: true })
-                                console.log({ _GANHADORES_: comments, info: true });
+                               const newListMap = comments.map(i=>{
+                                    return{
+                                        ...i,
+                                        numbers: i.numbers.split(",")
+                                    }
+                                })
+                                io.emit("_GANHADORES_", { _GANHADORES_: newListMap, info: true })
 
                             }
                         })

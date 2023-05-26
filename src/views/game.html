@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body class="h-screen w-screen">
+  <main class="w-full h-full flex flex-row gap-4 justify-center bg-blue-500 p-4">
+    <section class="w-[25%] p-4 border-2 border-blue-600 rounded">
+      <div class="flex items-center justify-center">
+        <div
+          class="bg-slate-900/70 px-8 py-2 w-full rounded-lg border-2 border-yellow-300 flex flex-col justify-center items-center shadow-yellow-200 shadow-sm">
+          <div class="uppercase text-lg font-semibold text-white">
+            concurso nº
+          </div>
+          <span class="text-3xl font-bold text-yellow-500" id="numero_concurso">32987</span>
+        </div>
+      </div>
+      <!-- relogio  -->
+      <div class="mt-4"></div>
+      <div class="grid gap-1 grid-cols-2">
+        <div class="bg-black p-1.5 rounded grid justify-center">
+          <span class="text-yellow-700 uppercase text-sm font-semibold">Hora atual</span>
+          <span class="text-white text-center font-bold text-lg">11:35</span>
+        </div>
+        <div class="bg-black p-1.5 rounded grid justify-center">
+          <span class="text-yellow-700 uppercase text-sm font-semibold">próximo sorteio</span>
+          <span class="text-white text-center font-bold text-lg">11:35</span>
+        </div>
+      </div>
+      <!-- relogio  -->
+    </section>
+
+    <section class="flex-1 p-4 border-2 border-blue-600 rounded">
+      <div class="text-yellow-500/80 font-bold text-2xl mb-2">
+        Melhores Bilhetres
+      </div>
+      <div class="grid grid-cols-2 gap-2" id="melhores-cartelas">
+
+
+        <!-- cartelas -->
+        <div class="bg-blue-800 rounded">
+            <header class="flex gap-2 uppercase items-center">
+              <span class="text-yellow-600 font-bold ml-2">24076</span>
+              <span
+                class="uppercase text-white text-[10px] font-semibold -tracking-widest"
+                >cantinho do espeto</span
+              >
+            </header>
+            <main class="bg-blue-300 p-1 gap-2 grid grid-cols-4">
+              <span class="bg-blue-200 rounded text-center">25</span>
+              <span class="bg-blue-200 rounded text-center">21</span>
+              <span class="bg-blue-200 rounded text-center">23</span>
+              <span class="bg-blue-200 rounded text-center">45</span>
+              <span class="bg-blue-200 rounded text-center">53</span>
+              <span class="bg-blue-200 rounded text-center">35</span>
+              <span class="bg-blue-200 rounded text-center">26</span>
+              <span class="bg-blue-200 rounded text-center">59</span>
+              <span class="bg-blue-200 rounded text-center">15</span>
+              <span class="bg-blue-200 rounded text-center">22</span>
+              <span class="bg-blue-200 rounded text-center">01</span>
+              <span class="bg-blue-200 rounded text-center">34</span>
+              <span class="bg-blue-200 rounded text-center">06</span>
+              <span class="bg-blue-200 rounded text-center">08</span>
+              <span class="bg-blue-200 rounded text-center">32</span>
+              <span class="bg-blue-200 rounded text-center"></span>
+              <span class="bg-blue-200 rounded text-center"></span>
+              <span class="bg-blue-200 rounded text-center"></span>
+              <span class="bg-blue-200 rounded text-center"></span>
+              <span class="bg-blue-200 rounded text-center">3</span>
+            </main>
+          </div>
+        <!-- cartelasEnd -->
+
+      </div>
+      <!-- cartelasEnd -->
+      </div>
+    </section>
+
+    <section class="w-[25%] p-4 border-2 border-blue-600 rounded">
+
+      <div class="flex bg-slate-900 items-center rounded">
+        <div class="py-4 px-2 bg-slate-500/20 h-full w-full flex-1 min-h-[90px]">
+          <span class="text-yellow-400 font-bold">Números sorteados</span>
+          <span class="flex gap-2 mt-2 grid-cols-6" id="as-sorteadas">
+          </span>
+        </div>
+
+        <div class="h-full w-[30%]">
+          <div id="bola-da-vez"> </div>
+        </div>
+
+      </div>
+
+      <!-- numeros cheio -->
+      <div class="mt-6"></div>
+      <div class="bg-blue-950 p-2 rounded">
+        <div class="grid gap-y-2 grid-cols-10">
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            1
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            2
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            3
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            4
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-red-500 text-white flex items-center justify-center">
+            5
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            6
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            7
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            8
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            9
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            10
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-red-500 text-white flex items-center justify-center">
+            11
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            12
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            13
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            14
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            15
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            16
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            17
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            18
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            19
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            20
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            21
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            22
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-red-500 text-white flex items-center justify-center">
+            23
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-red-500 text-white flex items-center justify-center">
+            24
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            25
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            26
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            27
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            28
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            29
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            30
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            31
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            32
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            33
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            34
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            35
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            36
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            37
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            38
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            39
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            40
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            41
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            42
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            43
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            44
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            45
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            46
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            47
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            48
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            49
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            50
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            51
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            52
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            53
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            54
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            55
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            56
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            57
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            58
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-white flex items-center justify-center">
+            59
+          </div>
+          <div class="w-6 h-6 rounded-sm font-semibold bg-red-500 text-white flex items-center justify-center">
+            60
+          </div>
+        </div>
+      </div>
+      <!-- numeros cheio -->
+    </section>
+  </main>
+
+  <script type="module">
+    import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
+    const socket = io('http://192.168.0.111:4008');
+
+    // DECLARAÃO VINCULO FRANCO
+    const _HTML_BOLA_DA_VEZ = document.querySelector("#bola-da-vez")
+    const _HTML_CONTAINER = document.querySelector("#as-sorteadas")
+    const _HTML_AS_MELHORES_CARTELAS = document.querySelector('#melhores-cartelas');
+
+    // PEGAR O NUMERO DO CONCURSO
+    const _HTML_NUMERO_CONCURSO = document.querySelector("#numero_concurso");
+    socket.on('number::aposta', data => _HTML_NUMERO_CONCURSO.innerHTML = data);
+
+    // NÚMEROS SORTEADOS
+    _HTML_CONTAINER.innerHTML = '';
+    _HTML_BOLA_DA_VEZ.innerHTML = '';
+    socket.on('gamer:total', (resultado) => {
+      _FN_HTML_BOLA_DA_VEZ(resultado)
+      _HTML_BOLL(resultado)
+    });
+
+
+    let _HTML_GANHADORES = ` `;
+    socket.on('_GANHADORES_', ({ _GANHADORES_, info }) => {
+      console.log(info, _GANHADORES_);
+
+      // <div> <span class="font-bold">Cartela: </span> #</div>
+      // <div> <span class="font-bold">Local: </span>${item.establishment.name} </div>
+      // <div> <span class="font-bold">Local: </span>${item.numbers} </div>
+      _GANHADORES_.forEach(item => {
+        _HTML_GANHADORES += `<div class="bg-blue-800 rounded">
+            <header class="flex gap-2 uppercase items-center">
+              <span class="text-yellow-600 font-bold ml-2">${item.namber_bet}</span>
+              <span class="uppercase text-white text-[10px] font-semibold -tracking-widest">
+                ${item.establishment.name} 
+              </span>
+            </header>
+            <main class="bg-blue-300 p-1 gap-2 grid grid-cols-4">
+              <span class="bg-blue-200 rounded text-center">25</span>
+              <span class="bg-blue-200 rounded text-center">21</span>
+              <span class="bg-blue-200 rounded text-center">23</span>
+              <span class="bg-blue-200 rounded text-center">45</span>
+              <span class="bg-blue-200 rounded text-center">53</span>
+              <span class="bg-blue-200 rounded text-center">35</span>
+             ${item.numbers.forEach(i=> `<span class="bg-blue-200 rounded text-center">${i}</span>` ) }
+            </main>
+          </div>`
+      })
+      _HTML_AS_MELHORES_CARTELAS.innerHTML = _HTML_GANHADORES
+    });
+
+    function _FN_MELHORES_CATERLAS_NUMEROS(numeros) {
+      console.log(numeros);
+      const arr = numeros.split(",")
+      const list = arr.map(item => {
+        return '<span class="bg-blue-200 rounded text-center">'+item+'</span>'
+      })
+      console.log(list[0]);
+
+      return list[0]
+    }
+
+
+    function _FN_HTML_BOLA_DA_VEZ(item) {
+      _HTML_BOLA_DA_VEZ.innerHTML = '';
+      const div = document.createElement('span');
+      div.classList.add('bg-[#' + gerarCoresHexadecimais()[0] + ']')
+      div.classList.add("rounded-full");
+      div.classList.add("justify-center");
+      div.classList.add("w-11");
+      div.classList.add("h-11");
+      div.classList.add("flex");
+      div.classList.add("items-center");
+      div.classList.add("ml-2");
+      div.classList.add("-mt-4");
+      div.classList.add('text-white');
+      div.classList.add('font-bold');
+      div.classList.add('text-1xl');
+      div.innerHTML = item
+      _HTML_BOLA_DA_VEZ.appendChild(div);
+    }
+
+    function _HTML_BOLL(bool) {
+      const div = document.createElement('div');
+      div.classList.add('rounded-full');
+      div.classList.add('bg-slate-100');
+      div.classList.add('justify-center');
+      div.classList.add('w-7');
+      div.classList.add('h-7');
+      div.classList.add('flex');
+      div.classList.add('items-center');
+      div.classList.add('justify-center');
+      div.classList.add('text-white');
+      div.classList.add('font-bold');
+      div.classList.add('bg-[#' + gerarCoresHexadecimais()[0] + ']')
+      div.innerHTML = bool;
+      _HTML_CONTAINER.appendChild(div);
+    }
+
+    function gerarCoresHexadecimais() {
+      var coresHex = [];
+
+      while (coresHex.length < 100) {
+        var corHex = "";
+
+        for (var j = 0; j < 6; j++) {
+          var digitoHex = Math.floor(Math.random() * 16).toString(16);
+          corHex += digitoHex;
+        }
+
+        if (corHexEhEscura(corHex)) {
+          coresHex.push(corHex);
+        }
+      }
+
+      return coresHex;
+    }
+
+    function corHexEhEscura(corHex) {
+      // Extrai os componentes RGB da cor hexadecimal
+      var r = parseInt(corHex.substring(0, 2), 16);
+      var g = parseInt(corHex.substring(2, 4), 16);
+      var b = parseInt(corHex.substring(4, 6), 16);
+
+      // Calcula a luminosidade da cor
+      var luminosidade = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+      // Retorna true se a luminosidade for menor que 0.4 (considerada escura), caso contrário, retorna false
+      return luminosidade < 0.4;
+    }
+
+
+
+    // CLEAN / RESET
+    socket.on('__CLEAN__', () => {
+      _HTML_AS_MELHORES_CARTELAS.innerHTML = ""
+      _HTML_CONTAINER.innerHTML = ""
+      _HTML_BOLA_DA_VEZ.innerHTML = ""
+    });
+  </script>
+</body>
+
+</html>
