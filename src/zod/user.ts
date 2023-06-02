@@ -7,6 +7,7 @@ export const UserModel = z.object({
   code_ref_user: z.string().nullish(),
   email: z.string(),
   password: z.string(),
+  recover_password: z.string().nullish(),
   access_role: z.nativeEnum(TYPEROLEUSER),
   is_active: z.boolean(),
   created_at: z.date(),

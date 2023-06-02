@@ -48,15 +48,16 @@ enum TYPEROLEUSER {
 }
 
 model User {
-  id            String       @id @default(uuid())
-  code_ref_user String?
-  email         String
-  password      String
-  access_role   TYPEROLEUSER @default(SELLER)
-  is_active     Boolean      @default(true)
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @default(now()) @updatedAt
-  Code_Users    Code_Users[]
+  id               String       @id @default(uuid())
+  code_ref_user    String?
+  email            String       @unique
+  password         String
+  recover_password String?      @default("")
+  access_role      TYPEROLEUSER @default(SELLER)
+  is_active        Boolean      @default(true)
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @default(now()) @updatedAt
+  Code_Users       Code_Users[]
 
   @@index([id, email, access_role])
   @@map("users")

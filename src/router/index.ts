@@ -4,6 +4,7 @@ import { BetController } from "../controllers/BetController"
 import { CheckBetController } from "../controllers/CheckBetController"
 import { HomeController } from "../controllers/HomeController"
 import { UsersController } from "../controllers/UsersController"
+import { ResetPasswordController } from "../controllers/ResetPasswordController"
 
 const r = Router()
 
@@ -15,10 +16,7 @@ r.post("/v1/bet", BetController.create)
 
 r.post("/v1/users", UsersController.CreateNewUser)
 
-r.get("/v1/recover-password/:code", (request, response) => {
-    const code = request.params.code;
-
-    response.json(code)
-})
+r.post("/v1/recover-password", ResetPasswordController.handle)
+r.get("/v1/recover-password/:uuid", ResetPasswordController.handleExecute)
 
 export { r }
