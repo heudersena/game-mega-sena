@@ -1,6 +1,7 @@
 import "dotenv/config"
 import express, { Request, Response, NextFunction } from "express"
 import http from "http"
+import cors from "cors"
 import path from "path"
 import nunjucks from "nunjucks"
 import { Server } from 'socket.io';
@@ -9,6 +10,8 @@ import { r } from "./router";
 
 const app = express()
 const serverHttp = http.createServer(app);
+
+app.use(cors())
 
 app.use("/static", express.static(path.join(__dirname, 'static')))
 

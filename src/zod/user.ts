@@ -1,5 +1,6 @@
 import * as z from "zod"
 import { TYPEROLEUSER } from "@prisma/client"
+import { CompleteCode_Users, RelatedCode_UsersModel } from "./index"
 
 export const UserModel = z.object({
   id: z.string(),
@@ -11,3 +12,16 @@ export const UserModel = z.object({
   created_at: z.date(),
   updated_at: z.date(),
 })
+
+export interface CompleteUser extends z.infer<typeof UserModel> {
+  Code_Users: CompleteCode_Users[]
+}
+
+/**
+ * RelatedUserModel contains all relations on your model in addition to the scalars
+ *
+ * NOTE: Lazy required in case of potential circular dependencies within schema
+ */
+export const RelatedUserModel: z.ZodSchema<CompleteUser> = z.lazy(() => UserModel.extend({
+  Code_Users: RelatedCode_UsersModel.array(),
+}))

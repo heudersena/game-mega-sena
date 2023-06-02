@@ -1,4 +1,5 @@
 export * from "./user"
+export * from "./code_users"
 export * from "./game"
 export * from "./establishment"
 export * from "./address"

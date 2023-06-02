@@ -44,6 +44,7 @@ enum TYPEROLEUSER {
   SELLER // VENDENDOR
   MEMBERS // SOCIOS
   OTHERS // OUTROS
+  ESTABLISHMENT // estabelecimento
 }
 
 model User {
@@ -55,9 +56,19 @@ model User {
   is_active     Boolean      @default(true)
   created_at    DateTime     @default(now())
   updated_at    DateTime     @default(now()) @updatedAt
+  Code_Users    Code_Users[]
 
   @@index([id, email, access_role])
   @@map("users")
+}
+
+model Code_Users {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  code       String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+  userId     String
 }
 
 model Game {
