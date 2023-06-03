@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `bets` ADD COLUMN `hits` INTEGER NOT NULL DEFAULT 0;

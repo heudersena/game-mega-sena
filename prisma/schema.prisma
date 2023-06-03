@@ -48,16 +48,17 @@ enum TYPEROLEUSER {
 }
 
 model User {
-  id               String       @id @default(uuid())
-  code_ref_user    String?
-  email            String       @unique
+  id               String          @id @default(uuid())
+  code_ref_user    String?         @unique
+  email            String          @unique
   password         String
-  recover_password String?      @default("")
-  access_role      TYPEROLEUSER @default(SELLER)
-  is_active        Boolean      @default(true)
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @default(now()) @updatedAt
+  recover_password String?         @default("")
+  access_role      TYPEROLEUSER    @default(SELLER)
+  is_active        Boolean         @default(true)
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @default(now()) @updatedAt
   Code_Users       Code_Users[]
+  Establishment    Establishment[]
 
   @@index([id, email, access_role])
   @@map("users")
@@ -88,16 +89,17 @@ model Game {
 // Pessoas que compram as cartelas / Pessoas / Estabelecimento
 // Estabelecimento => Establishment =>establishments
 model Establishment {
-  id                  String    @id @default(uuid())
-  name                String
-  number_phone        String
-  number_code         String // CNPJ ou CPF
-  is_active           Boolean   @default(true)
-  geographic_location String?
-  latitude            String?
-  longitude           String?
-  Address             Address[]
-  Bet                 Bet[]
+  id           String    @id @default(uuid())
+  name         String
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  seller_code  String?
+  number_phone String
+  number_code  String // CNPJ ou CPF
+  is_active    Boolean   @default(true)
+  description  String?
+  Address      Address[]
+  Bet          Bet[]
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
@@ -107,15 +109,18 @@ model Establishment {
 
 // https://brasilapi.com.br/api/cep/v2/72550012
 model Address {
-  id              String        @id @default(uuid())
-  cep             String
-  state           String
-  city            String
-  neighborhood    String
-  street          String
-  number          String
-  establishment   Establishment @relation(fields: [establishmentId], references: [id])
-  establishmentId String
+  id                  String        @id @default(uuid())
+  cep                 String
+  state               String
+  city                String
+  neighborhood        String
+  street              String
+  number              String
+  geographic_location String?
+  latitude            String?
+  longitude           String?
+  establishment       Establishment @relation(fields: [establishmentId], references: [id])
+  establishmentId     String
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt

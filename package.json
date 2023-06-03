@@ -16,6 +16,7 @@
     "@mermaid-js/mermaid-cli": "^10.1.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.1.1",
     "@types/nodemailer": "^6.4.8",
     "@types/nunjucks": "^3.2.2",

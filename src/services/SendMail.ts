@@ -39,9 +39,9 @@ class CLASSSendEmail {
 
         mailTransporter.sendMail(mailDetails, function (err, data) {
             if (err) {
-                console.log('Error Occurs');
+                return err
             } else {
-                console.log('Email sent successfully');
+                return data
             }
         });
 

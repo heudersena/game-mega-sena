@@ -2,7 +2,12 @@ import * as express from "express"
 declare global {
     namespace Express {
         interface Request {
-            user: {}
+            user: {
+                id: string,
+                code_ref_user: string,
+                email: string,
+                access_role: string
+            }
             io: any
             region: string
         }
