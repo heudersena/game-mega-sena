@@ -31,6 +31,12 @@ class CronJobGamer {
             const BETS = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, status: "IN_PROCESSING" } })
 
             processArray(0)
+            
+            function sorteiaNumeros() {
+                const numberArray = Array.from({ length: 60 }, (_, i) => ({ value: i+1, active: false }))
+                return (numbers: number) => numberArray.map(item => ({ ...item, active: item.value === numbers }))
+            }        
+
 
             async function processArray(index) {
                 let countTimeOut;
@@ -43,6 +49,9 @@ class CronJobGamer {
                 countTimeOut = setTimeout(async () => {
                     io.emit("gamer:total", TRANSFORME_STRING_TO_ARRAY[index])
                     processArray(index + 1);
+                    const retornaNumerosSorteados = sorteiaNumeros()
+                    const n = retornaNumerosSorteados(TRANSFORME_STRING_TO_ARRAY[index])
+                    console.log(n);
 
                 }, 10000);
 
@@ -50,14 +59,16 @@ class CronJobGamer {
                 await updateEveryRoundOfTheResult._HANDLE(BETS, TRANSFORME_STRING_TO_ARRAY[index])
                 // const updateBetView = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits: { gt: 3 } } }, orderBy: { hits_round: "desc" }, include: { establishment: true } })
 
-                const updateBetView = await prisma.bet.findMany({ where: { number_game_result: String(_ID), AND: {} }, take: 8, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
-    
+                const updateBetView = await prisma.bet.findMany({ where: { number_game_result: String(_ID), AND: {} }, take: 15, orderBy: { hits_round: "desc" }, include: { establishment: { select: { name: true } } } })
+
                 if (updateBetView.length > 0) {
                     console.log("Entrar");
-                    const newListMap = updateBetView.map(i=>{
-                        return{
-                            ...i,
-                            numbers: i.numbers.split(",")
+                    const newListMap = updateBetView.map(i => {
+                        return {
+                            id: i.id,
+                            namber_bet: i.namber_bet,
+                            name: i.establishment.name,
+                            namber_round: i.namber_round ? i.namber_round!.split(",") : []
                         }
                     })
                     setTimeout(() => io.emit("_GANHADORES_", { _GANHADORES_: newListMap, info: false }), 1000)
@@ -92,13 +103,15 @@ class CronJobGamer {
                 })
 
                 setTimeout(() =>
-                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, include: { establishment: { select: { name: true } } } })
+                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, take: 15, include: { establishment: { select: { name: true } } } })
                         .then((comments) => {
                             if (comments.length > 0) {
-                               const newListMap = comments.map(i=>{
-                                    return{
-                                        ...i,
-                                        numbers: i.numbers.split(",")
+                                const newListMap = comments.map(i => {
+                                    return {
+                                        id: i.id,
+                                        namber_bet: i.namber_bet,
+                                        name: i.establishment.name,
+                                        namber_round: i.namber_round ? i.namber_round!.split(",") : []
                                     }
                                 })
                                 io.emit("_GANHADORES_", { _GANHADORES_: newListMap, info: true })

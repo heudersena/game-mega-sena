@@ -9,7 +9,7 @@ interface IPayload {
 const Auth = async (request: Request, response: Response, next: NextFunction) => {
     const authHeader = request.headers.authorization;
     if (!authHeader)
-        return response.json({ err: true, jwt: true, message: ERROR });
+        return response.status(401).json({ err: true, jwt: true, message: ERROR });
 
     const [, token] = authHeader.split(' ');
     try {
@@ -19,7 +19,7 @@ const Auth = async (request: Request, response: Response, next: NextFunction) =>
 
         return next();
     } catch (error) {
-        return response.json({ err: true, jwt: true, message: ERROR });
+        return response.status(401).json({ err: true, jwt: true, message: ERROR });
     }
 };
 

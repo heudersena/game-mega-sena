@@ -49,7 +49,7 @@ class UsuariosDatabase {
             // @ts-ignore
             delete user?.updated_at
             // @ts-ignore
-            const token = jsonwebtoken.sign({ user: JSON.stringify(user) }, String(PRIVATE_KEY), { expiresIn: '60m' })
+            const token = jsonwebtoken.sign({ user: JSON.stringify(user) }, String(PRIVATE_KEY), { expiresIn: '1m' })
             return { status: false, message: SUCCESS, data: { token, user } }
         }
 
