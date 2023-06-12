@@ -1,4 +1,5 @@
 import cron from "node-cron"
+import moment from "moment"
 import { returnLastIdTableGames } from "../utils/returnLastIdTableGames"
 import { generateUniqueNumbers } from "../utils/generateUniqueNumbers"
 import { insertValueTableGame } from "../utils/insertValueTableGame"
@@ -9,7 +10,7 @@ import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResul
 
 class CronJobGamer {
     static async startGamer(io: any) {
-        return cron.schedule('*/1 * * * *', async () => {
+        return cron.schedule('*/3 * * * *', async () => {
             io.emit("__CLEAN__")
 
             // NUMERO UNÍCO GAME
@@ -20,8 +21,16 @@ class CronJobGamer {
 
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
+
+            const hours_database = GAMER?.created_at
+            const hora_database = moment(hours_database).format("HH:mm:ss")
+            const horaAtualida = moment(hours_database).add(2,'minutes').format("HH:mm:ss")
+        
             const _ID = String(GAMER?.match_id)
-            console.log(_ID);
+            io.emit("relogio", {
+                atual: hora_database,
+                atualizda:horaAtualida
+            })
 
             // ENVIAR PARA O FRON-END O ID DO GAMER
             io.emit("number::aposta", _ID)
@@ -31,11 +40,19 @@ class CronJobGamer {
             const BETS = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, status: "IN_PROCESSING" } })
 
             processArray(0)
-            
-            function sorteiaNumeros() {
-                const numberArray = Array.from({ length: 60 }, (_, i) => ({ value: i+1, active: false }))
-                return (numbers: number) => numberArray.map(item => ({ ...item, active: item.value === numbers }))
-            }        
+
+            // function sorteiaNumero(numberArray: {value: number, active: boolean}[], numbers: number) {
+            //     const newArray = numberArray.map(item => {
+            //         return {
+            //             ...item,
+            //             active: item.active? true : item.value === numbers
+            //         }
+            //     })
+            //     return newArray
+            // }
+
+            // const numberArray = Array.from({ length: 60 }, (_, i) => ({ value: i+1, active: false }))                      
+
 
 
             async function processArray(index) {
@@ -49,10 +66,6 @@ class CronJobGamer {
                 countTimeOut = setTimeout(async () => {
                     io.emit("gamer:total", TRANSFORME_STRING_TO_ARRAY[index])
                     processArray(index + 1);
-                    const retornaNumerosSorteados = sorteiaNumeros()
-                    const n = retornaNumerosSorteados(TRANSFORME_STRING_TO_ARRAY[index])
-                    console.log(n);
-
                 }, 10000);
 
                 // CALCULAR AS MELHORES CARTELAS
@@ -81,8 +94,7 @@ class CronJobGamer {
                 const content = BETS.map((o) => {
                     const numbersArray = o.numbers.split(',').map(n => parseInt(n))
                     const intersection = numbersArray.filter(n => TRANSFORME_STRING_TO_ARRAY.includes(n))
-                    console.log(intersection);
-
+                   
                     return {
                         ...o,
                         hits: intersection.length,
