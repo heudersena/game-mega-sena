@@ -27,15 +27,15 @@ app.set('view engine', 'html');
 
 const io = new Server(serverHttp, {
     cors: {
-        origin: ["http://127.0.0.1:5500","http://192.168.0.111:5173","http://127.0.0.1:5174","http://192.168.0.111"],
+        origin: ["http://127.0.0.1:5500", "http://192.168.0.111:5173", "http://127.0.0.1:5174", "http://192.168.0.111"],
         methods: ["GET", "POST", "PUT", "DELETE", "PATH"]
     }
 });
 
 io.on('connection', (socket: any) => {
     console.log(socket.id);
-    
-    socket.emit("__CLEAN__")    
+
+    socket.emit("__CLEAN__")
     socket.join(socket.id)
 })
 
@@ -51,7 +51,17 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 })
 
 import { CronJobGamer } from "./cron/CronJobGamer";
+import { JogosDatabase } from "./DatabaseOperation/JogosDatabase"
 
+JogosDatabase.searchForTheLastGame().then(({ hora_database, horaAtualida }) => {
+    console.log(hora_database, horaAtualida );
+    io.on("relogio",()=> {
+        io.emit("relogio", {
+            atual: hora_database,
+            atualizda: horaAtualida
+        })
+    })
+})
 
 CronJobGamer.startGamer(io)
 

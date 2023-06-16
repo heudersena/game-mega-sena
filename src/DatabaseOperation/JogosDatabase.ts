@@ -1,3 +1,4 @@
+import moment from "moment"
 import { prisma } from "../db/database"
 import { generateUniqueNumbers12 } from "../utils/generateUniqueNumbers12"
 import { SUCCESS } from "../utils/message"
@@ -21,6 +22,17 @@ class JogosDatabase {
         }
 
 
+    }
+
+
+    static async searchForTheLastGame() {
+        const content = await prisma.$queryRaw`SELECT g.created_at	FROM	games AS g	ORDER BY g.created_at DESC LIMIT 1` as any
+        const hours_database = content[0]?.created_at ?? new Date()
+        const hora_database = moment(hours_database).format("HH:mm:ss")
+        const horaAtualida = moment(hours_database).add(2,'minutes').format("HH:mm:ss")
+        console.log(hora_database,horaAtualida);
+        return {hora_database,horaAtualida}
+        
     }
 
 

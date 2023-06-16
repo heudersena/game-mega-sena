@@ -58,6 +58,9 @@ class CronJobGamer {
             async function processArray(index) {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
+                    console.log("TRANSFORME_STRING_TO_ARRAY:",TRANSFORME_STRING_TO_ARRAY.length);
+                    
+                    // ALGUMA LOGICA....
                     clearTimeout(countTimeOut)
                     calculaApostas()
                     return;
