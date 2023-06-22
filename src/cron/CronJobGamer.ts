@@ -72,7 +72,7 @@ class CronJobGamer {
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
                     console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
 
-                    // 
+                    // 15
                     const betContent = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, hits: { gte: 4 } } })
                     console.log(betContent);
 
