@@ -21,15 +21,41 @@ class CronJobGamer {
 
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
+            const _ID = String(GAMER?.match_id)
+
+            const convertyNumber = Number(GAMER?.match_id) - 1
+
+            console.log("GAMER: ", GAMER);
+
+            // BUSCAR VALORES DO ULTIMO CONCURSO
+            const awars = await prisma.award.findFirst({ orderBy: { created_at: "desc" }, where: { ref_id: convertyNumber } })
+
+
+            const awarsOld: number = Number(awars?.subtract_premiums) ? Number(awars?.subtract_premiums) : 50.01
+            await prisma.award.create({
+                data: {
+                    total_prizes: awarsOld,
+                    subtract_premiums: awarsOld,
+                    seine: (awarsOld * 75) / 100,
+                    corner: (awarsOld * 15) / 100,
+                    block: (awarsOld * 10) / 100,
+                    ref_id: Number(_ID),
+                    gameId: GAMER?.id
+                }
+            })
+
+            // SALVAR O VALOR DO CONCURSO
+
+
 
             const hours_database = GAMER?.created_at
             const hora_database = moment(hours_database).format("HH:mm:ss")
-            const horaAtualida = moment(hours_database).add(2,'minutes').format("HH:mm:ss")
-        
-            const _ID = String(GAMER?.match_id)
+            const horaAtualida = moment(hours_database).add(2, 'minutes').format("HH:mm:ss")
+
+
             io.emit("relogio", {
                 atual: hora_database,
-                atualizda:horaAtualida
+                atualizda: horaAtualida
             })
 
             // ENVIAR PARA O FRON-END O ID DO GAMER
@@ -41,25 +67,15 @@ class CronJobGamer {
 
             processArray(0)
 
-            // function sorteiaNumero(numberArray: {value: number, active: boolean}[], numbers: number) {
-            //     const newArray = numberArray.map(item => {
-            //         return {
-            //             ...item,
-            //             active: item.active? true : item.value === numbers
-            //         }
-            //     })
-            //     return newArray
-            // }
-
-            // const numberArray = Array.from({ length: 60 }, (_, i) => ({ value: i+1, active: false }))                      
-
-
-
             async function processArray(index) {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
-                    console.log("TRANSFORME_STRING_TO_ARRAY:",TRANSFORME_STRING_TO_ARRAY.length);
-                    
+                    console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
+
+                    // 
+                    const betContent = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, hits: { gte: 4 } } })
+                    console.log(betContent);
+
                     // ALGUMA LOGICA....
                     clearTimeout(countTimeOut)
                     calculaApostas()
@@ -97,7 +113,7 @@ class CronJobGamer {
                 const content = BETS.map((o) => {
                     const numbersArray = o.numbers.split(',').map(n => parseInt(n))
                     const intersection = numbersArray.filter(n => TRANSFORME_STRING_TO_ARRAY.includes(n))
-                   
+
                     return {
                         ...o,
                         hits: intersection.length,
@@ -129,7 +145,9 @@ class CronJobGamer {
                                         namber_round: i.namber_round ? i.namber_round!.split(",") : []
                                     }
                                 })
+                                console.log("setTimeout init", new Date().toTimeString());
                                 io.emit("_GANHADORES_", { _GANHADORES_: newListMap, info: true })
+                                console.log("setTimeout fim", new Date().toTimeString());
 
                             }
                         })

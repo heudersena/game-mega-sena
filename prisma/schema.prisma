@@ -2,86 +2,87 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "views"]
+    provider        = "prisma-client-js"
+    previewFeatures = ["postgresqlExtensions", "views"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 generator zod {
-  provider = "zod-prisma"
-  output   = "../src/zod" // (default) the directory where generated zod schemas will be saved
+    provider = "zod-prisma"
+    output   = "../src/zod" // (default) the directory where generated zod schemas will be saved
 
-  relationModel = true // (default) Create and export both plain and related models.
-  // relationModel         = "default" // Do not export model without relations.
-  // relationModel         = false // Do not generate related model
+    relationModel = true // (default) Create and export both plain and related models.
+    // relationModel         = "default" // Do not export model without relations.
+    // relationModel         = false // Do not generate related model
 
-  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
-  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
+    modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+    // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
 
-  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+    modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
 
-  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
-  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+    // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
+    useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
 
-  // imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
+    // imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
 
-  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
-  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
-  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+    // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+    prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
+    // prismaJsonNullability = false // allows null assignment to optional JSON fields
 }
 
 generator erd {
-  provider = "prisma-erd-generator"
-  output   = "../ERD.pdf"
+    provider = "prisma-erd-generator"
+    output   = "../ERD.pdf"
 }
 
 enum TYPEROLEUSER {
-  SUPERADMIN // ZÉ
-  SELLER // VENDENDOR
-  MEMBERS // SOCIOS
-  OTHERS // OUTROS
-  ESTABLISHMENT // estabelecimento
+    SUPERADMIN // ZÉ
+    SELLER // VENDENDOR
+    MEMBERS // SOCIOS
+    OTHERS // OUTROS
+    ESTABLISHMENT // estabelecimento
 }
 
 model User {
-  id               String          @id @default(uuid())
-  code_ref_user    String?         @unique
-  email            String          @unique
-  password         String
-  recover_password String?         @default("")
-  access_role      TYPEROLEUSER    @default(SELLER)
-  is_active        Boolean         @default(true)
-  created_at       DateTime        @default(now())
-  updated_at       DateTime        @default(now()) @updatedAt
-  Code_Users       Code_Users[]
-  Establishment    Establishment[]
+    id               String          @id @default(uuid())
+    code_ref_user    String?         @unique
+    email            String          @unique
+    password         String
+    recover_password String?         @default("")
+    access_role      TYPEROLEUSER    @default(SELLER)
+    is_active        Boolean         @default(true)
+    created_at       DateTime        @default(now())
+    updated_at       DateTime        @default(now()) @updatedAt
+    Code_Users       Code_Users[]
+    Establishment    Establishment[]
 
-  @@index([id, email, access_role])
-  @@map("users")
+    @@index([id, email, access_role])
+    @@map("users")
 }
 
 model Code_Users {
-  id         String   @id @default(uuid())
-  user       User     @relation(fields: [userId], references: [id])
-  code       String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-  userId     String
+    id         String   @id @default(uuid())
+    user       User     @relation(fields: [userId], references: [id])
+    code       String
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
+    userId     String
 }
 
 model Game {
-  id         String   @id @default(uuid())
-  match_id   Int
-  numbers    String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+    id         String   @id @default(uuid())
+    match_id   Int
+    numbers    String
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
+    Award      Award[]
 
-  @@index([id, match_id])
-  @@map("games")
+    @@index([id, match_id])
+    @@map("games")
 }
 
 // Sociedades sócios => partners
@@ -89,67 +90,95 @@ model Game {
 // Pessoas que compram as cartelas / Pessoas / Estabelecimento
 // Estabelecimento => Establishment =>establishments
 model Establishment {
-  id           String    @id @default(uuid())
-  name         String
-  user         User      @relation(fields: [userId], references: [id])
-  userId       String
-  seller_code  String?
-  number_phone String
-  number_code  String // CNPJ ou CPF
-  is_active    Boolean   @default(true)
-  description  String?
-  Address      Address[]
-  Bet          Bet[]
+    id           String    @id @default(uuid())
+    name         String
+    user         User      @relation(fields: [userId], references: [id])
+    userId       String
+    seller_code  String?
+    number_phone String
+    number_code  String // CNPJ ou CPF
+    is_active    Boolean   @default(true)
+    description  String?
+    Address      Address[]
+    Bet          Bet[]
 
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
 
-  @@map("establishments")
+    @@map("establishments")
 }
 
 // https://brasilapi.com.br/api/cep/v2/72550012
 model Address {
-  id                  String        @id @default(uuid())
-  cep                 String
-  state               String
-  city                String
-  neighborhood        String
-  street              String
-  number              String
-  geographic_location String?
-  latitude            String?
-  longitude           String?
-  establishment       Establishment @relation(fields: [establishmentId], references: [id])
-  establishmentId     String
+    id                  String        @id @default(uuid())
+    cep                 String
+    state               String
+    city                String
+    neighborhood        String
+    street              String
+    number              String
+    geographic_location String?
+    latitude            String?
+    longitude           String?
+    establishment       Establishment @relation(fields: [establishmentId], references: [id])
+    establishmentId     String
 
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
 
-  @@map("adresses")
+    @@map("adresses")
 }
 
 enum BETSTATUS {
-  IN_PROCESSING
-  FINISHED
-  CANCELED
+    IN_PROCESSING
+    FINISHED
+    CANCELED
 }
 
 // Aposta bet
 model Bet {
-  id                 String        @id @default(uuid())
-  establishment      Establishment @relation(fields: [establishmentId], references: [id])
-  establishmentId    String
-  number_game_result String // PEGAR O NUMERO DO ULTIMO REGISTRO DA TABELA GAMER + 1
-  numbers            String
-  status             BETSTATUS     @default(IN_PROCESSING)
-  awarded            Boolean       @default(false) // premiada
-  hits               Int           @default(0) // acertos
-  namber_bet         Int           @unique()
-  hits_round         Int?          @default(0)
-  namber_round       String?       @default("")
-  isPaymentClient    Int           @default(0)
-  created_at         DateTime      @default(now())
-  updated_at         DateTime      @default(now()) @updatedAt
+    id                 String        @id @default(uuid())
+    establishment      Establishment @relation(fields: [establishmentId], references: [id])
+    establishmentId    String
+    number_game_result String // PEGAR O NUMERO DO ULTIMO REGISTRO DA TABELA GAMER + 1
+    numbers            String
+    status             BETSTATUS     @default(IN_PROCESSING)
+    awarded            Boolean       @default(false) // premiada
+    hits               Int           @default(0) // acertos
+    namber_bet         Int           @unique()
+    hits_round         Int?          @default(0)
+    namber_round       String?       @default("")
+    isPaymentClient    Int           @default(0)
+    created_at         DateTime      @default(now())
+    updated_at         DateTime      @default(now()) @updatedAt
 
-  @@map("bets")
+    @@map("bets")
+}
+
+model Award {
+    id                String   @id @default(uuid())
+    ref_id            Int
+    gemer             Game     @relation(fields: [gameId], references: [id])
+    gameId            String
+    total_prizes      Decimal? @default(0.00) @db.Decimal(10, 2)
+    subtract_premiums Decimal? @default(0.00) @db.Decimal(10, 2) // SERÁ SUBTRAÍDO CONFORME OS GANHADORES DA SENA, QUINA OU QUADRA.
+    seine             Decimal? @default(0.00) @db.Decimal(10, 2) // SENA 75%
+    corner            Decimal? @default(0.00) @db.Decimal(10, 2) // QUINA 15%
+    block             Decimal? @default(0.00) @db.Decimal(10, 2) // QUADRA 10%
+    player_seine      Decimal? @default(0.00) @db.Decimal(10, 2)
+    player_corner     Decimal? @default(0.00) @db.Decimal(10, 2)
+    player_block      Decimal? @default(0.00) @db.Decimal(10, 2)
+    created_at        DateTime @default(now())
+    updated_at        DateTime @default(now()) @updatedAt
+
+    @@map("awards")
+}
+
+model Accumulated {
+    id         Int      @id @default(autoincrement())
+    money      Decimal? @default(0.00) @db.Decimal(10, 2)
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now()) @updatedAt
+
+    @@map("accumulated")
 }

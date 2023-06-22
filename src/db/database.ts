@@ -5,4 +5,4 @@ const prisma = new PrismaClient({ log: ["error", "warn"] }) // log: ["query"]
 
 export { prisma }
 
-// prisma.$disconnect();
+prisma.$disconnect();

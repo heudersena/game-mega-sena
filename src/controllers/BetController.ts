@@ -5,15 +5,15 @@ import { JogosDatabase } from "../DatabaseOperation/JogosDatabase";
 
 class BetController {
     static async create(request: Request, response: Response) {
-        const { numbers, establishmentId } = request.body;
-        const content = await JogosDatabase.create(numbers, establishmentId)
-        response.json(content)
-
-    } catch(error) {
-        // @ts-ignore
-        response.json(error?.meta?.target == 'bets_namber_bet_key' ? "Tente novamente!" : error)
+        try {
+            const { numbers, establishmentId } = request.body;
+            const content = await JogosDatabase.create(numbers, establishmentId)
+            response.json(content)
+        } catch (error) {
+            // @ts-ignore
+            response.json(error?.meta?.target == 'bets_namber_bet_key' ? "Tente novamente!" : error)
+        }
     }
-
 }
 
 

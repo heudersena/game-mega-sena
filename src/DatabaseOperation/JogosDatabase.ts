@@ -26,11 +26,12 @@ class JogosDatabase {
 
 
     static async searchForTheLastGame() {
-        const content = await prisma.$queryRaw`SELECT g.created_at	FROM	games AS g	ORDER BY g.created_at DESC LIMIT 1` as any
+        const content = await prisma.$queryRaw`CALL PROCEDURE_GAMES('um')` as any
+        console.log("VIEW_BUSCAR_ULTIMO_REGISTRO_TABLE_GAMES: ",content);
+        
         const hours_database = content[0]?.created_at ?? new Date()
         const hora_database = moment(hours_database).format("HH:mm:ss")
         const horaAtualida = moment(hours_database).add(2,'minutes').format("HH:mm:ss")
-        console.log(hora_database,horaAtualida);
         return {hora_database,horaAtualida}
         
     }
