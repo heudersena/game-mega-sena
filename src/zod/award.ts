@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { Decimal } from "decimal.js"
-import { CompleteGame, RelatedGameModel } from "./index"
+import { IS_COMPLETEDA_AWARD } from "@prisma/client"
 
 // Helper schema for Decimal fields
 z
@@ -18,8 +18,7 @@ z
 
 export const AwardModel = z.object({
   id: z.string(),
-  ref_id: z.number().int(),
-  gameId: z.string(),
+  gamer_ref: z.number().int(),
   total_prizes: z.number().nullish(),
   subtract_premiums: z.number().nullish(),
   seine: z.number().nullish(),
@@ -28,19 +27,7 @@ export const AwardModel = z.object({
   player_seine: z.number().nullish(),
   player_corner: z.number().nullish(),
   player_block: z.number().nullish(),
+  is_completed: z.nativeEnum(IS_COMPLETEDA_AWARD),
   created_at: z.date(),
   updated_at: z.date(),
 })
-
-export interface CompleteAward extends z.infer<typeof AwardModel> {
-  gemer: CompleteGame
-}
-
-/**
- * RelatedAwardModel contains all relations on your model in addition to the scalars
- *
- * NOTE: Lazy required in case of potential circular dependencies within schema
- */
-export const RelatedAwardModel: z.ZodSchema<CompleteAward> = z.lazy(() => AwardModel.extend({
-  gemer: RelatedGameModel,
-}))

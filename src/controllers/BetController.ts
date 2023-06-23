@@ -7,7 +7,9 @@ class BetController {
     static async create(request: Request, response: Response) {
         try {
             const { numbers, establishmentId } = request.body;
+            
             const content = await JogosDatabase.create(numbers, establishmentId)
+
             response.json(content)
         } catch (error) {
             // @ts-ignore

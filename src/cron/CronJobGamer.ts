@@ -26,23 +26,12 @@ class CronJobGamer {
             const convertyNumber = Number(GAMER?.match_id) - 1
 
             console.log("GAMER: ", GAMER);
+            const awars = await prisma.award.findFirst({ orderBy: { created_at: "desc" } })
+            console.log("??", awars);
+
 
             // BUSCAR VALORES DO ULTIMO CONCURSO
-            const awars = await prisma.award.findFirst({ orderBy: { created_at: "desc" }, where: { ref_id: convertyNumber } })
 
-
-            const awarsOld: number = Number(awars?.subtract_premiums) ? Number(awars?.subtract_premiums) : 50.01
-            await prisma.award.create({
-                data: {
-                    total_prizes: awarsOld,
-                    subtract_premiums: awarsOld,
-                    seine: (awarsOld * 75) / 100,
-                    corner: (awarsOld * 15) / 100,
-                    block: (awarsOld * 10) / 100,
-                    ref_id: Number(_ID),
-                    gameId: GAMER?.id
-                }
-            })
 
             // SALVAR O VALOR DO CONCURSO
 
@@ -70,15 +59,93 @@ class CronJobGamer {
             async function processArray(index) {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
-                    console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
 
-                    // 15
-                    const betContent = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, hits: { gte: 4 } } })
-                    console.log(betContent);
+                    console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
+                    clearTimeout(countTimeOut)
+                    await calculaApostas()
+                    try {
+                        const betContent = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits_round: { gte: 4 }, AND: { awarded: true } } } })
+
+                        const quantidade = betContent.map(i => i.hits);
+
+                        var contagens = {};
+
+                        for (var i = 0; i < quantidade.length; i++) {
+                            var numero = quantidade[i];
+                            if (contagens[numero]) {
+                                contagens[numero]++;
+                            } else {
+                                contagens[numero] = 1;
+                            }
+                        }
+
+                        const four = contagens["4"] ?? 0
+                        const five = contagens["5"] ?? 0
+                        const six = contagens["6"] ?? 0
+
+                        console.log("GANHADORES: ", betContent);
+
+                        let awarsOld: number = Number(awars?.subtract_premiums)
+                        console.log("ANTE$S:awarsOld: ", awarsOld);
+                        let db_seine = Number(awars?.seine)
+                        let db_corner = Number(awars?.corner)
+                        let db_block = Number(awars?.block)
+
+                        if (six != 0) {
+                            awarsOld = awarsOld - db_seine
+                        }
+
+                        if (five != 0) {
+                            awarsOld = awarsOld - db_corner
+                        }
+
+                        if (four != 0) {
+                            awarsOld = awarsOld - db_block
+                        }
+
+                        console.log("DESPOS: awarsOld: ", awarsOld);
+                        console.log(six != 0 ? Number(awars?.seine) / six : Number(awars?.seine));
+                        console.log(five != 0 ? Number(awars?.corner) / five : Number(awars?.corner));
+                        console.log(four != 0 ? Number(awars?.block) / four : Number(awars?.block));
+
+
+
+                        const updateAward = await prisma.award.update({
+                            where: { gamer_ref: Number(_ID) }, data: {
+                                subtract_premiums: awarsOld,
+                                player_seine: six != 0 ? Number(awars?.seine) / six : Number(awars?.seine),
+                                player_corner: five != 0 ? Number(awars?.corner) / five : Number(awars?.corner),
+                                player_block: four != 0 ? Number(awars?.block) / four : Number(awars?.block),
+                                is_completed: "FINISHED"
+                            }
+                        })
+
+                        const RefUpdateAward = updateAward;
+
+                        try {
+                            const insert = await prisma.award.create({
+                                data: {
+                                    total_prizes: RefUpdateAward.subtract_premiums,
+                                    subtract_premiums: RefUpdateAward.subtract_premiums,
+                                    seine: (Number(RefUpdateAward?.subtract_premiums) * 75) / 100,
+                                    corner: (Number(RefUpdateAward.subtract_premiums) * 15) / 100,
+                                    block: (Number(RefUpdateAward.subtract_premiums) * 10) / 100,
+                                    gamer_ref: RefUpdateAward?.gamer_ref + 1,
+                                    is_completed: "IN_PROCESSING"
+                                }
+                            })
+                            console.log("=========", insert);
+                        } catch (error) {
+                            console.log(error);
+
+                        }
+                    } catch (error) {
+                        console.log(error);
+
+                    }
 
                     // ALGUMA LOGICA....
-                    clearTimeout(countTimeOut)
-                    calculaApostas()
+
                     return;
                 }
 

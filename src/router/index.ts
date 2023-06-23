@@ -11,6 +11,7 @@ import { Auth } from "../middleware/authenticated"
 import { randomUUID } from "crypto"
 import { EstablishmentController } from "../controllers/EstablishmentController"
 import { AdressesController } from "../controllers/AdressesController"
+import { ExemploController } from "../controllers/ExemploController"
 
 const r = Router()
 
@@ -31,13 +32,15 @@ r.post("/v1/establishment", Auth, EstablishmentController.create)
 
 r.post("/v1/adresses/:establishmentId", AdressesController.create)
 
-r.post("/v1/auth/verify", Auth, (req, res) => { 
-    console.log(req.user);    
-    res.send(req.user) 
+r.post("/v1/auth/verify", Auth, (req, res) => {
+    console.log(req.user);
+    res.send(req.user)
 })
 
 r.post("/v1/app-diversity/establishment", Auth, (req, res) => {
     res.send({ user: req.user })
 })
+
+r.get("/exemplo/:id", ExemploController.init)
 
 export { r }

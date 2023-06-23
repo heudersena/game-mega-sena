@@ -24,7 +24,8 @@ nunjucks.configure(path.join(__dirname, 'views'), {
 });
 app.set('view engine', 'html');
 
-
+// VERIFICAR A TABELA DE PREMIOS E INICIALA SE NECESSÁRIO.
+StartTableAward.starting().catch(i => console.log(i))
 
 const io = new Server(serverHttp, {
     cors: {
@@ -53,6 +54,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 
 import { CronJobGamer } from "./cron/CronJobGamer";
 import { JogosDatabase } from "./DatabaseOperation/JogosDatabase"
+import { StartTableAward } from "./services/StartTableAward"
 
 JogosDatabase.searchForTheLastGame().then(({ hora_database, horaAtualida }) => {
     console.log(hora_database, horaAtualida);

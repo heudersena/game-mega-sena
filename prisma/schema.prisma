@@ -79,7 +79,6 @@ model Game {
     numbers    String
     created_at DateTime @default(now())
     updated_at DateTime @default(now()) @updatedAt
-    Award      Award[]
 
     @@index([id, match_id])
     @@map("games")
@@ -155,21 +154,26 @@ model Bet {
     @@map("bets")
 }
 
+enum IS_COMPLETEDA_AWARD {
+    IN_PROCESSING
+    FINISHED
+}
+
 model Award {
-    id                String   @id @default(uuid())
-    ref_id            Int
-    gemer             Game     @relation(fields: [gameId], references: [id])
-    gameId            String
-    total_prizes      Decimal? @default(0.00) @db.Decimal(10, 2)
-    subtract_premiums Decimal? @default(0.00) @db.Decimal(10, 2) // SERÁ SUBTRAÍDO CONFORME OS GANHADORES DA SENA, QUINA OU QUADRA.
-    seine             Decimal? @default(0.00) @db.Decimal(10, 2) // SENA 75%
-    corner            Decimal? @default(0.00) @db.Decimal(10, 2) // QUINA 15%
-    block             Decimal? @default(0.00) @db.Decimal(10, 2) // QUADRA 10%
-    player_seine      Decimal? @default(0.00) @db.Decimal(10, 2)
-    player_corner     Decimal? @default(0.00) @db.Decimal(10, 2)
-    player_block      Decimal? @default(0.00) @db.Decimal(10, 2)
-    created_at        DateTime @default(now())
-    updated_at        DateTime @default(now()) @updatedAt
+    id                String              @id @default(uuid())
+    gamer_ref         Int                 @unique()
+    total_prizes      Decimal?            @default(0.00) @db.Decimal(10, 2)
+    subtract_premiums Decimal?            @default(0.00) @db.Decimal(10, 2) // SERÁ SUBTRAÍDO CONFORME OS GANHADORES DA SENA, QUINA OU QUADRA.
+    seine             Decimal?            @default(0.00) @db.Decimal(10, 2) // SENA 75%
+    corner            Decimal?            @default(0.00) @db.Decimal(10, 2) // QUINA 15%
+    block             Decimal?            @default(0.00) @db.Decimal(10, 2) // QUADRA 10%
+    player_seine      Decimal?            @default(0.00) @db.Decimal(10, 2)
+    player_corner     Decimal?            @default(0.00) @db.Decimal(10, 2)
+    player_block      Decimal?            @default(0.00) @db.Decimal(10, 2)
+    is_completed      IS_COMPLETEDA_AWARD @default(IN_PROCESSING)
+    home_deposit      Decimal?            @default(0.00) @db.Decimal(10, 2)
+    created_at        DateTime            @default(now())
+    updated_at        DateTime            @default(now()) @updatedAt
 
     @@map("awards")
 }
