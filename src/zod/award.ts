@@ -28,6 +28,7 @@ export const AwardModel = z.object({
   player_corner: z.number().nullish(),
   player_block: z.number().nullish(),
   is_completed: z.nativeEnum(IS_COMPLETEDA_AWARD),
+  home_deposit: z.number().nullish(),
   created_at: z.date(),
   updated_at: z.date(),
 })
