@@ -32,7 +32,7 @@ class UsuariosDatabase {
     static async login(email: string, password: string) {
         const PRIVATE_KEY = process.env.JWT_STRING
 
-        const user = await prisma.user.findFirst({ where: { email } })
+        const user = await prisma.user.findFirst({ where: { email }, include: { Establishment: { select: { id: true } } } })     
 
         const match_password = compareSync(password, String(user?.password!))
 
@@ -49,7 +49,7 @@ class UsuariosDatabase {
             // @ts-ignore
             delete user?.updated_at
             // @ts-ignore
-            const token = jsonwebtoken.sign({ user: JSON.stringify(user) }, String(PRIVATE_KEY), { expiresIn: '1m' })
+            const token = jsonwebtoken.sign({ user: JSON.stringify(user) }, String(PRIVATE_KEY), { expiresIn: '60m' })
             return { status: false, message: SUCCESS, data: { token, user } }
         }
 

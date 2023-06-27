@@ -35,15 +35,30 @@ const io = new Server(serverHttp, {
 });
 
 io.on('connection', (socket: any) => {
-    console.log(socket.id);
-
+    
     socket.emit("__CLEAN__")
     socket.join(socket.id)
+
+    socket.on("/BUSCAR_DADOS_HORA", async (_BUSCAR_DADOS_HORA) => {
+        const hours = await JogosDatabase.searchForTheLastGame()
+        socket.emit("/BUSCAR_DADOS_HORA", hours)
+    })
+
+    socket.on("/BUSCAR_ULTIMO_ID_GAMER", async () => {
+        const last_id = await BuscarUltimoIdoResultado.getId()
+        socket.emit("/BUSCAR_ULTIMO_ID_GAMER", last_id)
+    })
+
+    socket.on("/BUSCAR_VALORES_APOSTA", async () => {
+        const valores = await BuscarUltimoValorPremio.buscarValoresDosPremios()
+        socket.emit("/BUSCAR_VALORES_APOSTA", valores)
+    })
+
 })
 
 
 app.use(express.json())
-app.use(r)
+
 app.use((request: Request, response: Response, next: NextFunction) => {
     request.io = io
     response.header("Access-Control-Allow-Origin", "*")
@@ -51,21 +66,15 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     response.header("Access-Control-Allow-Headers", "*")
     next()
 })
-
+app.use(r)
 import { CronJobGamer } from "./cron/CronJobGamer";
 import { JogosDatabase } from "./DatabaseOperation/JogosDatabase"
 import { StartTableAward } from "./services/StartTableAward"
+import { BuscarUltimoIdoResultado } from "./utils/socket/BuscarUltimoIdoResultado"
+import { BuscarUltimoValorPremio } from "./utils/socket/BuscarUltimoValorPremio"
 
-JogosDatabase.searchForTheLastGame().then(({ hora_database, horaAtualida }) => {
-    console.log(hora_database, horaAtualida);
-    io.on("relogio", () => {
-        io.emit("relogio", {
-            atual: hora_database,
-            atualizda: horaAtualida
-        })
-    })
-})
 
+BuscarUltimoValorPremio.buscarValoresDosPremios().then(t=>console.log(t))
 CronJobGamer.startGamer(io)
 
 

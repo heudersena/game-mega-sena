@@ -6,7 +6,8 @@ declare global {
                 id: string,
                 code_ref_user: string,
                 email: string,
-                access_role: string
+                access_role: string,
+                Establishment?: any
             }
             io: any
             region: string

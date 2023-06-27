@@ -6,11 +6,18 @@ import { JogosDatabase } from "../DatabaseOperation/JogosDatabase";
 class BetController {
     static async create(request: Request, response: Response) {
         try {
-            const { numbers, establishmentId } = request.body;
-            
-            const content = await JogosDatabase.create(numbers, establishmentId)
+            const { numbers, quantidade } = request.body;
+            const establishmentId = request.user.Establishment[0].id;
+            const quantidade_loop = parseInt(quantidade ?? 1);
 
-            response.json(content)
+            const quantidadeDeJogos: any = [];
+
+            for (let i = 0; i < quantidade_loop; i++) {
+                const content = await JogosDatabase.create(numbers, establishmentId)
+                quantidadeDeJogos.push(content)
+            }
+
+            response.json({ content: quantidadeDeJogos })
         } catch (error) {
             // @ts-ignore
             response.json(error?.meta?.target == 'bets_namber_bet_key' ? "Tente novamente!" : error)

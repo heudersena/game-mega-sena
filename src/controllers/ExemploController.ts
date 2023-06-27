@@ -20,13 +20,49 @@ class ExemploController {
             }
         }
 
-        const data = {
-            four: (contagens["4"] ?? 0),
-            five: contagens["5"] ?? 0,
-            six: contagens["6"] ?? 0
-        }
+        const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_id) } })
 
-        response.json({ data, quantidade, betContent })
+        let totalValues = Number(award?.subtract_premiums)
+
+        const four = contagens["4"] ?? 0
+        const five = contagens["5"] ?? 0
+        const six = contagens["6"] ?? 0
+        console.log("ANTES: ", totalValues);
+
+        let divisaoFour = 0;
+        let divisaoFive = 0;
+        let divisaoSix = 0;
+
+        if (four != 0) {
+            divisaoFour = Number(award?.block) / four
+            totalValues = Number(totalValues) - Number(award?.block)
+        }
+        console.log("MEIO1: ", totalValues);
+        if (five != 0) {
+            divisaoFive = Number(award?.corner) / four
+            totalValues = Number(totalValues) - Number(award?.corner)
+        }
+        if (six != 0) {
+            divisaoSix = Number(award?.seine) / four
+            totalValues = Number(totalValues) - Number(award?.seine)
+        }
+        console.log("divisaoFour: ", divisaoFour);
+        console.log("divisaoFive: ", divisaoFive);
+        console.log("divisaoSix: ", divisaoSix);
+
+
+        console.log("DEPOIS: ", totalValues);
+        // ATUALIZAR O GAME ATUAL
+
+        const valuesFinal = totalValues > 0 ? totalValues: 50.00
+        // CRIAR O PROXÍMO GAME
+
+        console.log(valuesFinal);
+        
+
+
+
+        response.json({ totalValues, award, quantidade, betContent })
 
     }
 

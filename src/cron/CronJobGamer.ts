@@ -6,6 +6,7 @@ import { insertValueTableGame } from "../utils/insertValueTableGame"
 import { prisma } from "../db/database"
 
 import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResult"
+import { BuscarUltimoValorPremio } from "../utils/socket/BuscarUltimoValorPremio"
 
 
 class CronJobGamer {
@@ -24,11 +25,6 @@ class CronJobGamer {
             const _ID = String(GAMER?.match_id)
 
             const convertyNumber = Number(GAMER?.match_id) - 1
-
-            console.log("GAMER: ", GAMER);
-            const awars = await prisma.award.findFirst({ orderBy: { created_at: "desc" } })
-            console.log("??", awars);
-
 
             // BUSCAR VALORES DO ULTIMO CONCURSO
 
@@ -60,11 +56,14 @@ class CronJobGamer {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
 
-                    console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
+                    // console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
                     clearTimeout(countTimeOut)
                     await calculaApostas()
+
                     try {
+
                         const betContent = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits_round: { gte: 4 }, AND: { awarded: true } } } })
+                        const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_ID) }, orderBy: { created_at: "desc" } })
 
                         const quantidade = betContent.map(i => i.hits);
 
@@ -79,62 +78,69 @@ class CronJobGamer {
                             }
                         }
 
+
+                        let totalValues = Number(award?.subtract_premiums)
+
                         const four = contagens["4"] ?? 0
                         const five = contagens["5"] ?? 0
                         const six = contagens["6"] ?? 0
 
-                        console.log("GANHADORES: ", betContent);
-
-                        let awarsOld: number = Number(awars?.subtract_premiums)
-                        console.log("ANTE$S:awarsOld: ", awarsOld);
-                        let db_seine = Number(awars?.seine)
-                        let db_corner = Number(awars?.corner)
-                        let db_block = Number(awars?.block)
-
-                        if (six != 0) {
-                            awarsOld = awarsOld - db_seine
-                        }
-
-                        if (five != 0) {
-                            awarsOld = awarsOld - db_corner
-                        }
+                        let divisaoFour = 0;
+                        let divisaoFive = 0;
+                        let divisaoSix = 0;
 
                         if (four != 0) {
-                            awarsOld = awarsOld - db_block
+                            divisaoFour = Number(award?.block) / four
+                            totalValues = Number(totalValues) - Number(award?.block)
+                        }
+                        if (five != 0) {
+                            divisaoFive = Number(award?.corner) / four
+                            totalValues = Number(totalValues) - Number(award?.corner)
+                        }
+                        if (six != 0) {
+                            divisaoSix = Number(award?.seine) / four
+                            totalValues = Number(totalValues) - Number(award?.seine)
                         }
 
-                        console.log("DESPOS: awarsOld: ", awarsOld);
-                        console.log(six != 0 ? Number(awars?.seine) / six : Number(awars?.seine));
-                        console.log(five != 0 ? Number(awars?.corner) / five : Number(awars?.corner));
-                        console.log(four != 0 ? Number(awars?.block) / four : Number(awars?.block));
-
-
+                        const valuesFinal = totalValues > 0 ? totalValues : 50.00
+                        console.log("VALUESFINAL: ", valuesFinal);
+                        console.log("divisaoFour: ", divisaoFour);
+                        console.log("divisaoFive: ", divisaoFive);
+                        console.log("divisaoSix: ", divisaoSix);
+                        console.log(Number(_ID))
+                        
 
                         const updateAward = await prisma.award.update({
                             where: { gamer_ref: Number(_ID) }, data: {
-                                subtract_premiums: awarsOld,
-                                player_seine: six != 0 ? Number(awars?.seine) / six : Number(awars?.seine),
-                                player_corner: five != 0 ? Number(awars?.corner) / five : Number(awars?.corner),
-                                player_block: four != 0 ? Number(awars?.block) / four : Number(awars?.block),
+                                subtract_premiums: totalValues,
+                                player_seine: divisaoSix,
+                                player_corner: divisaoFive,
+                                player_block: divisaoFour,
                                 is_completed: "FINISHED"
                             }
                         })
 
-                        const RefUpdateAward = updateAward;
-
                         try {
                             const insert = await prisma.award.create({
                                 data: {
-                                    total_prizes: RefUpdateAward.subtract_premiums,
-                                    subtract_premiums: RefUpdateAward.subtract_premiums,
-                                    seine: (Number(RefUpdateAward?.subtract_premiums) * 75) / 100,
-                                    corner: (Number(RefUpdateAward.subtract_premiums) * 15) / 100,
-                                    block: (Number(RefUpdateAward.subtract_premiums) * 10) / 100,
-                                    gamer_ref: RefUpdateAward?.gamer_ref + 1,
-                                    is_completed: "IN_PROCESSING"
+                                    total_prizes: valuesFinal,
+                                    subtract_premiums: valuesFinal,
+                                    seine: (Number(valuesFinal) * 75) / 100,
+                                    corner: (Number(valuesFinal) * 15) / 100,
+                                    block: (Number(valuesFinal) * 10) / 100,
+                                    gamer_ref: updateAward?.gamer_ref + 1,
+                                    is_completed: "IN_PROCESSING",
+                                    home_deposit: updateAward?.subtract_premiums ? '00.00' : '50.00'
                                 }
                             })
-                            console.log("=========", insert);
+                            const awartValuesUpdate = await BuscarUltimoValorPremio.buscarValoresDosPremios()
+                            io.emit("/BUSCAR_VALORES_APOSTA", {
+                                subtract_premiums: awartValuesUpdate?.subtract_premiums,
+                                seine: awartValuesUpdate?.seine,
+                                corner: awartValuesUpdate?.corner,
+                                block: awartValuesUpdate?.block
+                            })
+
                         } catch (error) {
                             console.log(error);
 

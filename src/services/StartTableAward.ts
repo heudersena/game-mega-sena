@@ -17,7 +17,8 @@ class StartTableAward {
                     seine: (awarsOld * 75) / 100,
                     corner: (awarsOld * 15) / 100,
                     block: (awarsOld * 10) / 100,
-                    gamer_ref: 1
+                    gamer_ref: 1,
+                    home_deposit: 50.00
                 }
             })
             console.log(insert);
@@ -32,7 +33,7 @@ class StartTableAward {
                         corner: (Number(RefUpdateAward?.subtract_premiums) * 15) / 100,
                         block: (Number(RefUpdateAward?.subtract_premiums) * 10) / 100,
                         gamer_ref: RefUpdateAward?.gamer_ref! + 2,
-                        is_completed: "IN_PROCESSING"
+                        is_completed: "IN_PROCESSING",
                     }
                 })
                 console.log("StartTableAward.ts: ",insert);

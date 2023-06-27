@@ -12,6 +12,7 @@ import { randomUUID } from "crypto"
 import { EstablishmentController } from "../controllers/EstablishmentController"
 import { AdressesController } from "../controllers/AdressesController"
 import { ExemploController } from "../controllers/ExemploController"
+import { DepositarDinheiroManualAdminController } from "../controllers/DepositarDinheiroManualAdminController"
 
 const r = Router()
 
@@ -20,7 +21,7 @@ r.get("/", HomeController.index)
 r.get("/v1/check/:numbers", CheckBetController.check)
 r.get("/maior", CheckBetController.maior)
 
-r.post("/v1/bet", BetController.create)
+r.post("/v1/bet", Auth, BetController.create)
 
 r.post("/v1/users/register", UsersController.CreateNewUser)
 r.post("/v1/users/login", UsersController.Login)
@@ -42,5 +43,7 @@ r.post("/v1/app-diversity/establishment", Auth, (req, res) => {
 })
 
 r.get("/exemplo/:id", ExemploController.init)
+
+r.post("/v1/adiciona-dinheiro", DepositarDinheiroManualAdminController.create)
 
 export { r }

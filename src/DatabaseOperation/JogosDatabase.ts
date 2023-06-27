@@ -27,13 +27,13 @@ class JogosDatabase {
 
     static async searchForTheLastGame() {
         const content = await prisma.$queryRaw`CALL PROCEDURE_GAMES('um')` as any
-        console.log("VIEW_BUSCAR_ULTIMO_REGISTRO_TABLE_GAMES: ",content);
-        
+        console.log("VIEW_BUSCAR_ULTIMO_REGISTRO_TABLE_GAMES: ", content);
+
         const hours_database = content[0]?.created_at ?? new Date()
         const hora_database = moment(hours_database).format("HH:mm:ss")
-        const horaAtualida = moment(hours_database).add(2,'minutes').format("HH:mm:ss")
-        return {hora_database,horaAtualida}
-        
+        const horaAtualida = moment(hours_database).add(2, 'minutes').format("HH:mm:ss")
+        return { hora_database, horaAtualida }
+
     }
 
 
@@ -46,6 +46,13 @@ class JogosDatabase {
                     establishmentId: establishmentId,
                     namber_bet: namber_bet
 
+                },
+                include: {
+                    establishment: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
             })
 

@@ -5,6 +5,8 @@ import { EstabalecimentosDatabase } from "../DatabaseOperation/EstabalecimentosD
 class EstablishmentController {
 
     static async create(request: Request, response: Response) {
+        
+        console.log("ops");
         const seller_code = request.user.code_ref_user
         const { name, userId, number_phone, number_code, description } = request.body
         
