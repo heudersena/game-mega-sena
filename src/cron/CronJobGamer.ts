@@ -24,15 +24,6 @@ class CronJobGamer {
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
             const _ID = String(GAMER?.match_id)
 
-            const convertyNumber = Number(GAMER?.match_id) - 1
-
-            // BUSCAR VALORES DO ULTIMO CONCURSO
-
-
-            // SALVAR O VALOR DO CONCURSO
-
-
-
             const hours_database = GAMER?.created_at
             const hora_database = moment(hours_database).format("HH:mm:ss")
             const horaAtualida = moment(hours_database).add(2, 'minutes').format("HH:mm:ss")
@@ -64,6 +55,7 @@ class CronJobGamer {
 
                         const betContent = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits_round: { gte: 4 }, AND: { awarded: true } } } })
                         const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_ID) }, orderBy: { created_at: "desc" } })
+                        let totalValues = Number(award?.subtract_premiums)
 
                         const quantidade = betContent.map(i => i.hits);
 
@@ -76,14 +68,15 @@ class CronJobGamer {
                             } else {
                                 contagens[numero] = 1;
                             }
-                        }
-
-
-                        let totalValues = Number(award?.subtract_premiums)
+                        }                      
 
                         const four = contagens["4"] ?? 0
                         const five = contagens["5"] ?? 0
                         const six = contagens["6"] ?? 0
+                         console.log("QUATRO: ",four);
+                         console.log("CINCO: ",five);
+                         console.log("SEIS: ",six);
+                         
 
                         let divisaoFour = 0;
                         let divisaoFive = 0;
@@ -102,20 +95,22 @@ class CronJobGamer {
                             totalValues = Number(totalValues) - Number(award?.seine)
                         }
 
-                        const valuesFinal = totalValues > 0 ? totalValues : 50.00
+                        const valuesFinal = (totalValues > 0 ? totalValues : 50.00).toFixed(2)
                         console.log("VALUESFINAL: ", valuesFinal);
                         console.log("divisaoFour: ", divisaoFour);
                         console.log("divisaoFive: ", divisaoFive);
                         console.log("divisaoSix: ", divisaoSix);
-                        console.log(Number(_ID))
+                        console.log("_ID: ",Number(_ID))
+
+                        console.log("OLD_AWARD: ",award);
                         
 
                         const updateAward = await prisma.award.update({
                             where: { gamer_ref: Number(_ID) }, data: {
-                                subtract_premiums: totalValues,
-                                player_seine: divisaoSix,
-                                player_corner: divisaoFive,
-                                player_block: divisaoFour,
+                                subtract_premiums: totalValues.toFixed(2),
+                                player_seine: divisaoSix.toFixed(2),
+                                player_corner: divisaoFive.toFixed(2),
+                                player_block: divisaoFour.toFixed(2),
                                 is_completed: "FINISHED"
                             }
                         })
@@ -133,6 +128,9 @@ class CronJobGamer {
                                     home_deposit: updateAward?.subtract_premiums ? '00.00' : '50.00'
                                 }
                             })
+                            console.log("UPDATEAWARD: ",updateAward);
+                            console.log("INSERT: ",insert);
+                            
                             const awartValuesUpdate = await BuscarUltimoValorPremio.buscarValoresDosPremios()
                             io.emit("/BUSCAR_VALORES_APOSTA", {
                                 subtract_premiums: awartValuesUpdate?.subtract_premiums,

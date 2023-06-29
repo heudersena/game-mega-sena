@@ -9,6 +9,10 @@ class ExemploController {
 
         const quantidade = betContent.map(i => i.hits);
 
+        const db = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(44)`
+        console.log(db);
+        
+
         var contagens = {};
 
         for (var i = 0; i < quantidade.length; i++) {
@@ -21,12 +25,16 @@ class ExemploController {
         }
 
         const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_id) } })
-
         let totalValues = Number(award?.subtract_premiums)
 
         const four = contagens["4"] ?? 0
         const five = contagens["5"] ?? 0
         const six = contagens["6"] ?? 0
+
+        console.log("QUATRO: ", four);
+        console.log("CINCO: ", five);
+        console.log("SEIS: ", six);
+
         console.log("ANTES: ", totalValues);
 
         let divisaoFour = 0;
@@ -46,19 +54,18 @@ class ExemploController {
             divisaoSix = Number(award?.seine) / four
             totalValues = Number(totalValues) - Number(award?.seine)
         }
-        console.log("divisaoFour: ", divisaoFour);
-        console.log("divisaoFive: ", divisaoFive);
-        console.log("divisaoSix: ", divisaoSix);
+        console.log("divisaoFour: ", divisaoFour.toFixed(2));
+        console.log("divisaoFive: ", divisaoFive.toFixed(2));
+        console.log("divisaoSix: ", divisaoSix.toFixed(2));
 
 
-        console.log("DEPOIS: ", totalValues);
+        console.log("DEPOIS: ", totalValues.toFixed(2));
         // ATUALIZAR O GAME ATUAL
 
-        const valuesFinal = totalValues > 0 ? totalValues: 50.00
+        const valuesFinal = totalValues > 0 ? totalValues : 50.00
         // CRIAR O PROXÍMO GAME
 
-        console.log(valuesFinal);
-        
+        console.log(valuesFinal.toFixed(2));
 
 
 
