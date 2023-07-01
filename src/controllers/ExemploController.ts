@@ -9,8 +9,8 @@ class ExemploController {
 
         const quantidade = betContent.map(i => i.hits);
 
-        const db = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(44)`
-        console.log(db);
+        // const db = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(44)`
+        // console.log(db);
         
 
         var contagens = {};

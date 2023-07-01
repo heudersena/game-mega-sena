@@ -29,7 +29,7 @@ StartTableAward.starting().catch(i => console.log(i))
 
 const io = new Server(serverHttp, {
     cors: {
-        origin: ["http://127.0.0.1:5500", "http://192.168.0.111:5173", "http://127.0.0.1:5174", "http://192.168.0.111"],
+        origin: ["http://127.0.0.1:5500", "http://192.168.0.111:5173", "http://127.0.0.1:5174", "http://192.168.0.111","http://192.168.0.103:5005"],
         methods: ["GET", "POST", "PUT", "DELETE", "PATH"]
     }
 });

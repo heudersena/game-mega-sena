@@ -52,97 +52,51 @@ class CronJobGamer {
                     await calculaApostas()
 
                     try {
+                        new Promise(async function (resolve, reject) {
+                            const procedure = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(${_ID})`
+                            await prisma.$disconnect()
+                            console.log("PROCEDURE: ", procedure);
+                            resolve(procedure)
+                        }).then(() => {
 
-                        const betContent = await prisma.bet.findMany({ where: { number_game_result: _ID, AND: { hits_round: { gte: 4 }, AND: { awarded: true } } } })
-                        const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_ID) }, orderBy: { created_at: "desc" } })
-                        let totalValues = Number(award?.subtract_premiums)
+                            setTimeout(async () => {
+                                const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_ID) }, orderBy: { created_at: "desc" } })
+                                let totalValues = Number(award?.subtract_premiums)
 
-                        const quantidade = betContent.map(i => i.hits);
+                                const valuesFinal = (totalValues > 0 ? totalValues : 50.00).toFixed(2)
+                                console.log("old: ",award);
+                                
+                                try {
+                                    const insert = await prisma.award.create({
+                                        data: {
+                                            total_prizes: valuesFinal,
+                                            subtract_premiums: valuesFinal,
+                                            seine: (Number(valuesFinal) * 75) / 100,
+                                            corner: (Number(valuesFinal) * 15) / 100,
+                                            block: (Number(valuesFinal) * 10) / 100,
+                                            gamer_ref: award?.gamer_ref! + 1,
+                                            is_completed: "IN_PROCESSING",
+                                            home_deposit: award?.subtract_premiums ? '00.00' : '50.00'
+                                        }
+                                    })
+                                    console.log("INSERT: ", insert);
 
-                        var contagens = {};
+                                    const awartValuesUpdate = await BuscarUltimoValorPremio.buscarValoresDosPremios()
+                                    io.emit("/BUSCAR_VALORES_APOSTA", {
+                                        subtract_premiums: awartValuesUpdate?.subtract_premiums,
+                                        seine: awartValuesUpdate?.seine,
+                                        corner: awartValuesUpdate?.corner,
+                                        block: awartValuesUpdate?.block
+                                    })
 
-                        for (var i = 0; i < quantidade.length; i++) {
-                            var numero = quantidade[i];
-                            if (contagens[numero]) {
-                                contagens[numero]++;
-                            } else {
-                                contagens[numero] = 1;
-                            }
-                        }                      
+                                } catch (error) {
+                                    console.log(error);
 
-                        const four = contagens["4"] ?? 0
-                        const five = contagens["5"] ?? 0
-                        const six = contagens["6"] ?? 0
-                         console.log("QUATRO: ",four);
-                         console.log("CINCO: ",five);
-                         console.log("SEIS: ",six);
-                         
-
-                        let divisaoFour = 0;
-                        let divisaoFive = 0;
-                        let divisaoSix = 0;
-
-                        if (four != 0) {
-                            divisaoFour = Number(award?.block) / four
-                            totalValues = Number(totalValues) - Number(award?.block)
-                        }
-                        if (five != 0) {
-                            divisaoFive = Number(award?.corner) / four
-                            totalValues = Number(totalValues) - Number(award?.corner)
-                        }
-                        if (six != 0) {
-                            divisaoSix = Number(award?.seine) / four
-                            totalValues = Number(totalValues) - Number(award?.seine)
-                        }
-
-                        const valuesFinal = (totalValues > 0 ? totalValues : 50.00).toFixed(2)
-                        console.log("VALUESFINAL: ", valuesFinal);
-                        console.log("divisaoFour: ", divisaoFour);
-                        console.log("divisaoFive: ", divisaoFive);
-                        console.log("divisaoSix: ", divisaoSix);
-                        console.log("_ID: ",Number(_ID))
-
-                        console.log("OLD_AWARD: ",award);
-                        
-
-                        const updateAward = await prisma.award.update({
-                            where: { gamer_ref: Number(_ID) }, data: {
-                                subtract_premiums: totalValues.toFixed(2),
-                                player_seine: divisaoSix.toFixed(2),
-                                player_corner: divisaoFive.toFixed(2),
-                                player_block: divisaoFour.toFixed(2),
-                                is_completed: "FINISHED"
-                            }
-                        })
-
-                        try {
-                            const insert = await prisma.award.create({
-                                data: {
-                                    total_prizes: valuesFinal,
-                                    subtract_premiums: valuesFinal,
-                                    seine: (Number(valuesFinal) * 75) / 100,
-                                    corner: (Number(valuesFinal) * 15) / 100,
-                                    block: (Number(valuesFinal) * 10) / 100,
-                                    gamer_ref: updateAward?.gamer_ref + 1,
-                                    is_completed: "IN_PROCESSING",
-                                    home_deposit: updateAward?.subtract_premiums ? '00.00' : '50.00'
                                 }
-                            })
-                            console.log("UPDATEAWARD: ",updateAward);
-                            console.log("INSERT: ",insert);
-                            
-                            const awartValuesUpdate = await BuscarUltimoValorPremio.buscarValoresDosPremios()
-                            io.emit("/BUSCAR_VALORES_APOSTA", {
-                                subtract_premiums: awartValuesUpdate?.subtract_premiums,
-                                seine: awartValuesUpdate?.seine,
-                                corner: awartValuesUpdate?.corner,
-                                block: awartValuesUpdate?.block
-                            })
-
-                        } catch (error) {
-                            console.log(error);
-
-                        }
+                                console.log("CALCULO REALIZADO!");
+                                
+                            }, 6000)
+                        })
                     } catch (error) {
                         console.log(error);
 
@@ -205,7 +159,7 @@ class CronJobGamer {
                 })
 
                 setTimeout(() =>
-                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, take: 15, include: { establishment: { select: { name: true } } } })
+                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, take: 15,orderBy:{hits: "desc"}, include: { establishment: { select: { name: true } } } })
                         .then((comments) => {
                             if (comments.length > 0) {
                                 const newListMap = comments.map(i => {

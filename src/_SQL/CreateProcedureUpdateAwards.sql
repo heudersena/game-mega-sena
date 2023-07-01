@@ -29,6 +29,10 @@ BEGIN
   
   DECLARE SET_UPDATE_AWARDS_SIX DECIMAL(10,2);
   DECLARE SET_UPDATE_AWARDS_SIX_CALC DECIMAL(10,2);
+   
+  DECLARE SUBTRACAO_BLOCK DECIMAL(10,2);
+  DECLARE SUBTRACAO_FIVE DECIMAL(10,2);
+  DECLARE SUBTRACAO_SIX DECIMAL(10,2);
   
   DECLARE SET_IS_FINISHED VARCHAR(100);
   SELECT ADS.is_completed AS is_completed INTO SET_IS_FINISHED FROM awards AS ADS WHERE ADS.gamer_ref = param_id;
@@ -41,13 +45,20 @@ BEGIN
 
     SELECT TRUNCATE(COALESCE(`block` / NULLIF(QUANTIDADE_QUATRO,0) ,0),2)  INTO _PLAYER_BLOCK FROM awards AS A WHERE A.gamer_ref = param_id; 
 	 SELECT TRUNCATE(COALESCE(corner / NULLIF(QUANTIDADE_CINCO,0) ,0),2) INTO _PLAYER_FIVE FROM awards AS A WHERE A.gamer_ref = param_id; 
-	 SELECT TRUNCATE(COALESCE(seine / NULLIF(QUANTIDADE_SEIS,0) ,0),2) INTO _PLAYER_SIX FROM awards AS A WHERE A.gamer_ref = param_id;  
+	 SELECT TRUNCATE(COALESCE(seine / NULLIF(QUANTIDADE_SEIS,0) ,0),2) INTO _PLAYER_SIX FROM awards AS A WHERE A.gamer_ref = param_id;
+	 
+	  
+	 SELECT `block`  INTO SUBTRACAO_BLOCK FROM awards AS A WHERE A.gamer_ref = param_id; 
+	 SELECT `corner` INTO SUBTRACAO_FIVE FROM awards AS A WHERE A.gamer_ref = param_id; 
+	 SELECT `seine`  INTO SUBTRACAO_SIX FROM awards AS A WHERE A.gamer_ref = param_id; 
+	 
+	 
 	
 	 
 	 IF QUANTIDADE_QUATRO <> 0 THEN
 	     UPDATE awards SET player_block = _PLAYER_BLOCK WHERE gamer_ref = param_id;	       
 	     SELECT subtract_premiums INTO SET_UPDATE_AWARDS_BLOCK FROM awards  WHERE gamer_ref = param_id;     
-	     SET SET_UPDATE_AWARDS_BLOCK_CALC =  TRUNCATE(SET_UPDATE_AWARDS_BLOCK - _PLAYER_BLOCK,2);
+	     SET SET_UPDATE_AWARDS_BLOCK_CALC =  TRUNCATE(SET_UPDATE_AWARDS_BLOCK - SUBTRACAO_BLOCK,2);
 	     UPDATE awards SET subtract_premiums = SET_UPDATE_AWARDS_BLOCK_CALC WHERE gamer_ref = param_id;
 	     
 	 END IF;
@@ -55,14 +66,14 @@ BEGIN
 	 IF QUANTIDADE_CINCO <> 0 THEN
 	     UPDATE awards SET player_corner = _PLAYER_FIVE WHERE gamer_ref = param_id;	     
 	     SELECT subtract_premiums INTO SET_UPDATE_AWARDS_FIVE FROM awards  WHERE gamer_ref = param_id;     
-	     SET SET_UPDATE_AWARDS_FIVE_CALC =  TRUNCATE(SET_UPDATE_AWARDS_FIVE - _PLAYER_FIVE,2);
+	     SET SET_UPDATE_AWARDS_FIVE_CALC =  TRUNCATE(SET_UPDATE_AWARDS_FIVE - SUBTRACAO_FIVE,2);
 	     UPDATE awards SET subtract_premiums = SET_UPDATE_AWARDS_FIVE_CALC WHERE gamer_ref = param_id;
 	 END IF;
 	 
 	 IF QUANTIDADE_SEIS <> 0 THEN
 	     UPDATE awards SET player_seine = _PLAYER_SIX WHERE gamer_ref = param_id;     
 	     SELECT subtract_premiums INTO SET_UPDATE_AWARDS_SIX FROM awards  WHERE gamer_ref = param_id;	   
-	     SET SET_UPDATE_AWARDS_SIX_CALC =  TRUNCATE(SET_UPDATE_AWARDS_SIX - _PLAYER_SIX,2);
+	     SET SET_UPDATE_AWARDS_SIX_CALC =  TRUNCATE(SET_UPDATE_AWARDS_SIX - SUBTRACAO_SIX,2);
 	     UPDATE awards SET subtract_premiums = SET_UPDATE_AWARDS_SIX_CALC WHERE gamer_ref = param_id;	     
 	  END IF;
 	  
@@ -72,11 +83,3 @@ BEGIN
 	   	SELECT * FROM awards AS ADS WHERE ADS.gamer_ref = param_id;
    END IF;
    
-END //
-
-DELIMITER ;
-
-
-
- CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(41);
- SELECT * FROM awards WHERE awards.gamer_ref = 44
