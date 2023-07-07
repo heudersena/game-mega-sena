@@ -5,7 +5,7 @@ import { SUCCESS } from "../utils/message"
 
 class JogosDatabase {
 
-    static async create(numeros: string, establishmentId: string) {
+    static async create(numeros: string, establishmentId: number) {
 
         try {
             const game = await prisma.game.findFirst({ orderBy: { created_at: "desc" } })
@@ -37,14 +37,13 @@ class JogosDatabase {
     }
 
 
-    static async _FN_LOCAL_CREATE_BET(number_game_result: number, numbers: string, establishmentId: string, namber_bet: number) {
+    static async _FN_LOCAL_CREATE_BET(number_game_result: number, numbers: string, establishmentId: number, namber_bet: number) {
         try {
             const content = await prisma.bet.create({
                 data: {
                     number_game_result: String(number_game_result),
                     numbers: String(numbers),
                     establishmentId: establishmentId,
-                    namber_bet: namber_bet
 
                 },
                 include: {

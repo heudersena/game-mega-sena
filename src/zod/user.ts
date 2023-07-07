@@ -3,7 +3,7 @@ import { TYPEROLEUSER } from "@prisma/client"
 import { CompleteCode_Users, RelatedCode_UsersModel, CompleteEstablishment, RelatedEstablishmentModel } from "./index"
 
 export const UserModel = z.object({
-  id: z.string(),
+  id: z.number().int(),
   code_ref_user: z.string().nullish(),
   email: z.string(),
   password: z.string(),

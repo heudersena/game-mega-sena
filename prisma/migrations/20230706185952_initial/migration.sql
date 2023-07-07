@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `users` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `code_ref_user` VARCHAR(191) NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
@@ -18,18 +18,18 @@ CREATE TABLE `users` (
 
 -- CreateTable
 CREATE TABLE `Code_Users` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `code` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `userId` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `games` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `match_id` INTEGER NOT NULL,
     `numbers` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -41,9 +41,9 @@ CREATE TABLE `games` (
 
 -- CreateTable
 CREATE TABLE `establishments` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NOT NULL,
     `seller_code` VARCHAR(191) NULL,
     `number_phone` VARCHAR(191) NOT NULL,
     `number_code` VARCHAR(191) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE `establishments` (
 
 -- CreateTable
 CREATE TABLE `adresses` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `cep` VARCHAR(191) NOT NULL,
     `state` VARCHAR(191) NOT NULL,
     `city` VARCHAR(191) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE `adresses` (
     `geographic_location` VARCHAR(191) NULL,
     `latitude` VARCHAR(191) NULL,
     `longitude` VARCHAR(191) NULL,
-    `establishmentId` VARCHAR(191) NOT NULL,
+    `establishmentId` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -76,8 +76,8 @@ CREATE TABLE `adresses` (
 
 -- CreateTable
 CREATE TABLE `bets` (
-    `id` VARCHAR(191) NOT NULL,
-    `establishmentId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `establishmentId` INTEGER NOT NULL,
     `number_game_result` VARCHAR(191) NOT NULL,
     `numbers` VARCHAR(191) NOT NULL,
     `status` ENUM('IN_PROCESSING', 'FINISHED', 'CANCELED') NOT NULL DEFAULT 'IN_PROCESSING',
@@ -91,6 +91,37 @@ CREATE TABLE `bets` (
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `bets_namber_bet_key`(`namber_bet`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `awards` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `gamer_ref` INTEGER NOT NULL,
+    `total_prizes` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `subtract_premiums` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `seine` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `corner` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `block` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `player_seine` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `player_corner` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `player_block` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `is_completed` ENUM('IN_PROCESSING', 'FINISHED') NOT NULL DEFAULT 'IN_PROCESSING',
+    `home_deposit` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `awards_gamer_ref_key`(`gamer_ref`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `accumulated` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `money` DECIMAL(10, 2) NULL DEFAULT 0.00,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

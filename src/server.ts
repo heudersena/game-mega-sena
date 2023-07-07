@@ -7,7 +7,6 @@ import nunjucks from "nunjucks"
 import { Server } from 'socket.io';
 
 import { r } from "./router";
-
 const app = express()
 const serverHttp = http.createServer(app);
 

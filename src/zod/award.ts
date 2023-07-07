@@ -17,7 +17,7 @@ z
   .transform((value) => new Decimal(value))
 
 export const AwardModel = z.object({
-  id: z.string(),
+  id: z.number().int(),
   gamer_ref: z.number().int(),
   total_prizes: z.number().nullish(),
   subtract_premiums: z.number().nullish(),

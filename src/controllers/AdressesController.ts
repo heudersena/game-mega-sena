@@ -10,7 +10,7 @@ class AdressesController {
         const { cep, state, city, neighborhood, street, number, geographic_location, latitude, longitude } = request.body
         const { establishmentId } = request.params
 
-        const content = await EnderecosDatabase.create(cep, state, city, neighborhood, street, number, geographic_location, latitude, longitude, establishmentId)
+        const content = await EnderecosDatabase.create(cep, state, city, neighborhood, street, number, geographic_location, latitude, longitude, Number(establishmentId))
 
         response.json(content)
     }

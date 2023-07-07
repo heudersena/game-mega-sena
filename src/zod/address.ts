@@ -2,7 +2,7 @@ import * as z from "zod"
 import { CompleteEstablishment, RelatedEstablishmentModel } from "./index"
 
 export const AddressModel = z.object({
-  id: z.string(),
+  id: z.number().int(),
   cep: z.string(),
   state: z.string(),
   city: z.string(),
@@ -12,7 +12,7 @@ export const AddressModel = z.object({
   geographic_location: z.string().nullish(),
   latitude: z.string().nullish(),
   longitude: z.string().nullish(),
-  establishmentId: z.string(),
+  establishmentId: z.number().int(),
   created_at: z.date(),
   updated_at: z.date(),
 })

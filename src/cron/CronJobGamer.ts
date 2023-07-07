@@ -22,6 +22,8 @@ class CronJobGamer {
 
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
+            console.log("GAMER: ",GAMER);
+            
             const _ID = String(GAMER?.match_id)
 
             const hours_database = GAMER?.created_at
@@ -64,8 +66,11 @@ class CronJobGamer {
                                 let totalValues = Number(award?.subtract_premiums)
 
                                 const valuesFinal = (totalValues > 0 ? totalValues : 50.00).toFixed(2)
-                                console.log("old: ",award);
-                                
+                                console.log("old: ", award);
+                                console.log("===================================",award?.subtract_premiums);
+                                console.log("===================================",Number(award?.subtract_premiums) != 0 ? Number(award?.subtract_premiums) : Number(50.00));
+                                console.log("===================================");
+                                const values = Number(award?.subtract_premiums) != 0 ? Number(award?.subtract_premiums) : Number(50.00)
                                 try {
                                     const insert = await prisma.award.create({
                                         data: {
@@ -76,7 +81,7 @@ class CronJobGamer {
                                             block: (Number(valuesFinal) * 10) / 100,
                                             gamer_ref: award?.gamer_ref! + 1,
                                             is_completed: "IN_PROCESSING",
-                                            home_deposit: award?.subtract_premiums ? '00.00' : '50.00'
+                                            home_deposit: values
                                         }
                                     })
                                     console.log("INSERT: ", insert);
@@ -94,8 +99,8 @@ class CronJobGamer {
 
                                 }
                                 console.log("CALCULO REALIZADO!");
-                                
-                            }, 6000)
+
+                            }, 10000)
                         })
                     } catch (error) {
                         console.log(error);
@@ -159,7 +164,7 @@ class CronJobGamer {
                 })
 
                 setTimeout(() =>
-                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, take: 15,orderBy:{hits: "desc"}, include: { establishment: { select: { name: true } } } })
+                    prisma.bet.findMany({ where: { number_game_result: { equals: String(_ID) }, AND: { awarded: { equals: true } } }, take: 15, orderBy: { hits: "desc" }, include: { establishment: { select: { name: true } } } })
                         .then((comments) => {
                             if (comments.length > 0) {
                                 const newListMap = comments.map(i => {

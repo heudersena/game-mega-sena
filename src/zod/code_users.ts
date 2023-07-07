@@ -2,11 +2,11 @@ import * as z from "zod"
 import { CompleteUser, RelatedUserModel } from "./index"
 
 export const Code_UsersModel = z.object({
-  id: z.string(),
+  id: z.number().int(),
   code: z.string(),
   created_at: z.date(),
   updated_at: z.date(),
-  userId: z.string(),
+  userId: z.number().int(),
 })
 
 export interface CompleteCode_Users extends z.infer<typeof Code_UsersModel> {

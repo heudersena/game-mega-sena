@@ -15,6 +15,7 @@ const Auth = async (request: Request, response: Response, next: NextFunction) =>
     const [, token] = authHeader.split(' ');
     try {
         const  sub  =  verify(token, String(process.env.JWT_STRING)) as any;   
+           console.log(JSON.parse(sub.user));
            
         request.user = JSON.parse(sub.user)
         return next();

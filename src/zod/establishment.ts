@@ -2,9 +2,9 @@ import * as z from "zod"
 import { CompleteUser, RelatedUserModel, CompleteAddress, RelatedAddressModel, CompleteBet, RelatedBetModel } from "./index"
 
 export const EstablishmentModel = z.object({
-  id: z.string(),
+  id: z.number().int(),
   name: z.string(),
-  userId: z.string(),
+  userId: z.number().int(),
   seller_code: z.string().nullish(),
   number_phone: z.string(),
   number_code: z.string(),
