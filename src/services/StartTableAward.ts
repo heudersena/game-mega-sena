@@ -21,7 +21,7 @@ class StartTableAward {
                     home_deposit: 50.00
                 }
             })
-            console.log(insert);
+            // console.log(insert);
 
         } else {
             if (awars?.is_completed != "IN_PROCESSING") {
@@ -36,10 +36,10 @@ class StartTableAward {
                         is_completed: "IN_PROCESSING",
                     }
                 })
-                console.log("StartTableAward.ts: ",insert);
+                // console.log("StartTableAward.ts: ",insert);
                 
             } else{
-                console.log("JÁ EXISTE UM RESULTADO EM PROCESSO.");
+                // console.log("JÁ EXISTE UM RESULTADO EM PROCESSO.");
                 
             }
         }

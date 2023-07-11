@@ -157,6 +157,7 @@ model Bet {
 
 enum IS_COMPLETEDA_AWARD {
     IN_PROCESSING
+    REFUSES_VALUES
     FINISHED
 }
 
@@ -186,4 +187,42 @@ model Accumulated {
     updated_at DateTime @default(now()) @updatedAt
 
     @@map("accumulated")
+}
+
+enum m_status {
+    pending
+    approved
+    cancelled
+}
+
+enum m_status_detail {
+    accredited
+    cancelled
+    pending_waiting_transfer
+    expired
+    dinheiro
+}
+
+enum transaction_type {
+    pix
+    dinheiro
+}
+
+model Transaction {
+    id               Int              @id @default(autoincrement())
+    amount           Decimal          @default(0.00) @db.Decimal(10, 2)
+    type             transaction_type
+    m_id             Int?
+    m_status         m_status?        @default(pending)
+    m_status_detail  m_status_detail  @default(dinheiro)
+    m_email          String?
+    m_qr_code        String?
+    m_ticket_url     String?
+    m_transaction_id String?
+    m_qr_code_base64 String?          @db.Text
+    created_at       DateTime         @default(now())
+    updated_at       DateTime         @default(now()) @updatedAt
+
+    @@index([id, m_id])
+    @@map("transactions")
 }

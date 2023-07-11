@@ -22,9 +22,14 @@ class CronJobGamer {
 
             // INSERI NO BANCO DE DADOS
             const GAMER = await insertValueTableGame(NEW_NAMBER_GAME, LAST_NAMBER_INSERTED_TABLE_GAME)
-            console.log("GAMER: ",GAMER);
-            
+
             const _ID = String(GAMER?.match_id)
+
+            // ATUALIZAR A TABELA AWARDS PARA NÃO RECEBER MAIS VALORES
+            await prisma.award.update({ where: { id: Number(_ID) }, data: { is_completed: "REFUSES_VALUES" } }).then(i => {
+                console.log("UPDATE: ", i);
+
+            })
 
             const hours_database = GAMER?.created_at
             const hora_database = moment(hours_database).format("HH:mm:ss")
@@ -43,6 +48,7 @@ class CronJobGamer {
 
             const BETS = await prisma.bet.findMany({ where: { awarded: false, number_game_result: _ID, status: "IN_PROCESSING" } })
 
+
             processArray(0)
 
             async function processArray(index) {
@@ -57,19 +63,13 @@ class CronJobGamer {
                         new Promise(async function (resolve, reject) {
                             const procedure = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(${_ID})`
                             await prisma.$disconnect()
-                            console.log("PROCEDURE: ", procedure);
                             resolve(procedure)
                         }).then(() => {
 
                             setTimeout(async () => {
                                 const award = await prisma.award.findFirst({ where: { gamer_ref: Number(_ID) }, orderBy: { created_at: "desc" } })
                                 let totalValues = Number(award?.subtract_premiums)
-
                                 const valuesFinal = (totalValues > 0 ? totalValues : 50.00).toFixed(2)
-                                console.log("old: ", award);
-                                console.log("===================================",award?.subtract_premiums);
-                                console.log("===================================",Number(award?.subtract_premiums) != 0 ? Number(award?.subtract_premiums) : Number(50.00));
-                                console.log("===================================");
                                 const values = Number(award?.subtract_premiums) != 0 ? Number(award?.subtract_premiums) : Number(50.00)
                                 try {
                                     const insert = await prisma.award.create({
@@ -99,12 +99,10 @@ class CronJobGamer {
 
                                 }
                                 console.log("CALCULO REALIZADO!");
-
                             }, 10000)
                         })
                     } catch (error) {
                         console.log(error);
-
                     }
 
                     // ALGUMA LOGICA....
