@@ -28,7 +28,6 @@ class CronJobGamer {
             // ATUALIZAR A TABELA AWARDS PARA NÃO RECEBER MAIS VALORES
             await prisma.award.update({ where: { id: Number(_ID) }, data: { is_completed: "REFUSES_VALUES" } }).then(i => {
                 console.log("UPDATE: ", i);
-
             })
 
             const hours_database = GAMER?.created_at
