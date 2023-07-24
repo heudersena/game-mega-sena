@@ -54,13 +54,17 @@ class CronJobGamer {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
 
-                    // console.log("TRANSFORME_STRING_TO_ARRAY:", TRANSFORME_STRING_TO_ARRAY.length);
+                    
+                    console.log(new Date().toTimeString());
                     clearTimeout(countTimeOut)
                     await calculaApostas()
+                    console.log(new Date().toTimeString());
+                    setTimeout(() => { }, 2000)
 
                     try {
                         new Promise(async function (resolve, reject) {
                             const procedure = await prisma.$queryRaw`CALL PROCEDURE_BUSCAS_QUANTIDADE_GANHADORES(${_ID})`
+                            console.log("NEW PROMISE: ", procedure);
                             await prisma.$disconnect()
                             resolve(procedure)
                         }).then(() => {
