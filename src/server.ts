@@ -49,6 +49,8 @@ io.on('connection', (socket: any) => {
     })
 
     socket.on("/BUSCAR_VALORES_APOSTA", async () => {
+        console.log("BUSCAR_VALORES_APOSTA");
+        
         const valores = await BuscarUltimoValorPremio.buscarValoresDosPremios()
         socket.emit("/BUSCAR_VALORES_APOSTA", valores)
     })
