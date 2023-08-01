@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src"],
+    entry: ["src",'!src/**/*.sql','!src/**/*.SQL','!src/**/*.html','!src/zod/**/*'],
   splitting: false,
   sourcemap: false,
   clean: true,

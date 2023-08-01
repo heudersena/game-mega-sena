@@ -8,10 +8,13 @@ import { prisma } from "../db/database"
 import { updateEveryRoundOfTheResult } from "../utils/updateEveryRoundOfTheResult"
 import { BuscarUltimoValorPremio } from "../utils/socket/BuscarUltimoValorPremio"
 
+console.log("CRONJOBGAMER::INICIADO");
 
 class CronJobGamer {
     static async startGamer(io: any) {
         return cron.schedule('*/3 * * * *', async () => {
+            console.log("minut");
+
             io.emit("__CLEAN__")
 
             // NUMERO UNÍCO GAME
@@ -54,7 +57,7 @@ class CronJobGamer {
                 let countTimeOut;
                 if (index >= TRANSFORME_STRING_TO_ARRAY.length) {
 
-                    
+
                     console.log(new Date().toTimeString());
                     clearTimeout(countTimeOut)
                     await calculaApostas()

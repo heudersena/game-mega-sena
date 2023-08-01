@@ -16,7 +16,7 @@ import { DepositarDinheiroManualAdminController } from "../controllers/Depositar
 
 const r = Router()
 
-r.get("/", HomeController.index)
+// r.get("/", HomeController.index)
 
 r.get("/v1/check/:numbers", CheckBetController.check)
 r.get("/maior", CheckBetController.maior)
